@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A personalized spiritual self-discovery quiz to uncover your Soul Signature, current story pattern, and next aligned step.">
+<title>Remembering Report™ | ISABELL</title>
+<style>
+:root{--navy:#061a36;--navy2:#0b274d;--gold:#d8b65a;--gold2:#f0d78d;--cream:#fffaf0;--ink:#162033;--muted:#6a7180;--line:#e7dcc0;--white:#fff}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,var(--navy),#102d53 34%,#f7f2e7 34%);font-family:Georgia,"Times New Roman",serif;color:var(--ink);min-height:100vh}
+.wrap{max-width:880px;margin:auto;padding:28px 16px 70px}.hero{text-align:center;color:white;padding:12px 12px 28px}.logo{width:min(520px,92vw);max-height:430px;object-fit:contain;margin:auto;display:block}
+.eyebrow{font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);margin:8px 0}.hero h1{font-size:clamp(2rem,5vw,3.5rem);margin:.1em 0}.hero p{max-width:650px;margin:12px auto;line-height:1.6;color:#e7edf6}
+.card{background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,38px);box-shadow:0 18px 60px rgba(0,0,0,.18);margin:18px 0}.hidden{display:none!important}
+.chapters{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0}.chap{font-size:.72rem;text-align:center;padding:9px 4px;border-radius:999px;background:#efe8d8;color:#7d7158}.chap.active{background:var(--gold);color:var(--navy);font-weight:bold}.chap.done{background:var(--navy2);color:white}
+.progress{height:8px;background:#eee6d6;border-radius:99px;overflow:hidden;margin:14px 0 28px}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--gold),#f0d78d);transition:.3s}
+.qmeta{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:#8c7440}.question{font-size:clamp(1.28rem,3vw,1.75rem);line-height:1.35;margin:10px 0 22px;color:var(--navy)}
+.opts{display:grid;gap:11px}.opt{border:1px solid #ddd2bb;background:#fff;padding:15px 16px;border-radius:13px;text-align:left;font:inherit;line-height:1.4;cursor:pointer;color:var(--ink)}.opt:hover,.opt.selected{border-color:var(--gold);background:#fff7df;box-shadow:0 0 0 2px rgba(216,182,90,.15)}
+.controls{display:flex;justify-content:space-between;gap:12px;margin-top:24px}.btn{border:0;border-radius:11px;padding:13px 19px;font-weight:bold;cursor:pointer;font-size:.96rem}.primary{background:var(--navy);color:var(--gold2)}.gold{background:var(--gold);color:var(--navy)}.ghost{background:#eee8dc;color:var(--navy)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.sig{background:#fbf6ea;border:1px solid var(--line);border-radius:14px;padding:15px}.sig b{display:block;color:#9b7a31;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.callout{background:#fff7df;border-left:4px solid var(--gold);padding:16px 18px;border-radius:10px;line-height:1.55;margin:17px 0}.section-title{color:var(--navy);margin-top:30px}.field{margin:15px 0}.field label{display:block;font-weight:bold;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid #cfc5b2;border-radius:10px;font:inherit}.field textarea{min-height:90px}.checks label{font-weight:normal;display:flex;gap:10px;align-items:flex-start}.checks input{width:auto;margin-top:4px}
+.note{font-size:.84rem;color:var(--muted);line-height:1.5}.success{background:#edf8ef;border:1px solid #b8dabc;color:#214d27;padding:12px;border-radius:10px}.warn{background:#fff3e8;border:1px solid #e7c7a5;color:#6a431b;padding:12px;border-radius:10px}
+.report p{line-height:1.65}.report h2{color:var(--navy)}.booking{display:inline-block;background:var(--navy);color:var(--gold2);text-decoration:none;padding:14px 21px;border-radius:10px;font-weight:bold;margin:12px 0}
+footer{text-align:center;color:#6f6a61;font-size:.78rem;margin-top:25px;line-height:1.5}@media(max-width:640px){.grid{grid-template-columns:1fr}.chapters{gap:4px}.chap{font-size:.62rem}.card{padding:20px 17px}.logo{width:min(400px,96vw)}}
+@media print{body{background:white}.hero,.chapters,.progress,.controls,#emailStatus,.booking{display:none!important}.card{box-shadow:none;border:0}.wrap{max-width:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+<img class="logo" src="ISABELL_Logo_CtOYA.png" alt="ISABELL — Choose to Own Your Adventure™">
+<div class="eyebrow">Remember → Recognize → Rewrite → Realign → Choose → Cross → Embody</div>
+<h1>Your Remembering Report™</h1>
+<p>A reflective journey into your gifts, current story, threshold pattern and next aligned chapter.</p>
+</header>
+
+<div class="chapters" id="chapters">
+<div class="chap active">Remember</div><div class="chap">Gifts</div><div class="chap">Story</div><div class="chap">Threshold</div><div class="chap">Next Chapter</div>
+</div>
+<div class="progress"><div id="bar"></div></div>
+
+<section class="card" id="intro">
+<div class="qmeta">A personalized reflective assessment</div>
+<h2>Begin where you are.</h2>
+<p>This experience separates your broad spiritual meaning-orientation, the gifts you tend to bring, the developmental story you may be living, and the patterns that may currently interfere with movement.</p>
+<p class="note">It is a coaching and self-reflection tool—not a psychological, medical, spiritual or diagnostic determination. Spiritual labels are offered as optional meaning frameworks rather than objective claims about identity or origin.</p>
+<button class="btn gold" id="start">Begin My Remembering</button>
+</section>
+
+<section class="card hidden" id="quiz">
+<div class="qmeta" id="qmeta"></div>
+<div class="question" id="question"></div>
+<div class="opts" id="opts"></div>
+<div class="controls"><button class="btn ghost" id="back">Back</button><button class="btn primary" id="next" disabled>Continue</button></div>
+</section>
+
+<section class="card hidden" id="intake">
+<div class="qmeta">Your life right now</div>
+<h2>Bring the result into your real story.</h2>
+<div class="field"><label>If your life were a story, where do you feel you are right now?</label><select id="storySelf"><option value="">Choose one…</option><option>The Call — I know something needs to change.</option><option>The Crossroads — I can see possibilities but do not know which one is mine.</option><option>The Threshold — I know where I want to go but something keeps stopping me.</option><option>The Trial — I am in a difficult chapter and trying to find my footing.</option><option>The Rewrite — I am actively releasing an old version of myself.</option><option>The Gift — I am beginning to trust what is emerging in me.</option><option>The Return — I want to live what I have learned more consistently.</option><option>I'm not sure yet.</option></select></div>
+<div class="field"><label>What area feels most ready for change?</label><select id="lifeArea"><option value="">Choose one…</option><option>Career / Purpose</option><option>Relationships</option><option>Spirituality</option><option>Creative expression</option><option>Money / abundance</option><option>Health / wellbeing</option><option>Home / lifestyle</option><option>Other</option></select></div>
+<div class="field"><label>If one thing changed in the next 90 days, what would create the greatest difference?</label><textarea id="goal90"></textarea></div>
+<div class="field"><label>What do you believe is currently keeping you from it?</label><textarea id="obstacle"></textarea></div>
+<div class="field"><label>What would becoming more fully yourself make possible?</label><textarea id="possibility"></textarea></div>
+<div class="field"><label>Why does this matter now?</label><textarea id="whyNow"></textarea></div>
+<hr style="border:0;border-top:1px solid #e7dcc0;margin:25px 0">
+<div class="field"><label>First name *</label><input id="firstName" autocomplete="given-name"></div>
+<div class="field"><label>Email address *</label><input id="email" type="email" autocomplete="email"></div>
+<div class="field"><label>Phone (optional here; required when you book your call)</label><input id="phone" type="tel" autocomplete="tel"></div>
+<div class="checks field"><label><input type="checkbox" id="delivery" checked disabled> <span>I understand my email is used to deliver the Remembering Report I requested.</span></label></div>
+<div class="checks field"><label><input type="checkbox" id="marketing"> <span>Yes, I'd also like occasional reflections, resources and invitations from ISABELL.</span></label></div>
+<div class="checks field"><label><input type="checkbox" id="spiritual"> <span>Yes, I welcome optional faith/spiritual reflection language in my report.</span></label></div>
+<button class="btn gold" id="finish">Create & Email My Report</button>
+<div id="emailStatus" style="margin-top:14px"></div>
+</section>
+
+<section class="card hidden report" id="results">
+<div class="qmeta">Your Remembering Report</div>
+<h1 id="resultName"></h1>
+<p>A glimpse of the story you are living — and the next chapter asking to be written.</p>
+<div class="grid" id="signatureGrid"></div>
+<h2 class="section-title">Where You Are in the Story</h2><h3 id="storyTitle"></h3><p id="storyNarrative"></p>
+<h2 class="section-title">Your Current Threshold</h2><h3 id="veilTitle"></h3><p id="veilNarrative"></p>
+<div id="supportingWrap"><h3>A Supporting Pattern</h3><p id="supportingNarrative"></p></div>
+<h2 class="section-title">The Central Tension</h2><p id="centralTension"></p>
+<div class="callout"><b>Your Remembering Statement</b><br><span id="remembering"></span></div>
+<h2 class="section-title">Your Next Chapter</h2><p id="nextChapter"></p>
+<h2 class="section-title">Try This for 7 Days</h2><p id="sevenDay"></p>
+<div id="spiritualWrap" class="hidden"><h2 class="section-title">A Spiritual Reflection</h2><p>Bring the next step into prayer with a simple discernment question: <em>What is mine to do faithfully now?</em> Let reflection support grounded action rather than replace it.</p></div>
+<h2 class="section-title">Ready to Talk About What Surfaced?</h2>
+<p>Your complimentary 20-minute <b>Remembering Session — Soul Story Clarity Call</b> is a private phone conversation where we connect your report to the chapter you're living now and identify the most useful next step.</p>
+<a class="booking" href="https://calendar.app.google/gZrjFxxhJR3M7FB19" target="_blank" rel="noopener">BOOK MY REMEMBERING SESSION</a>
+<p class="note">You choose the time and provide the best mobile number. ISABELL will call you.</p>
+<button class="btn ghost" onclick="window.print()">Print / Save My Report</button>
+<footer>The Remembering Report™ is a reflective coaching tool for personal insight and development. It is not a medical, psychological, legal or diagnostic assessment. Symbolic and spiritual interpretations should remain grounded in ordinary causes, personal consent and appropriate professional support where needed.</footer>
+</section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+const CONFIG = {
+  bookingUrl: "https://calendar.app.google/gZrjFxxhJR3M7FB19",
+  logoPath: "ISABELL_Logo_CtOYA.png",
+  logoUrl: "https://choosetoownyouradventure.github.io/RememberingReport/ISABELL_Logo_CtOYA.png",
+  practitionerEmail: "choosetoownyouradventure@gmail.com",
+  emailjs: {
+    serviceId: "service_4lykhrr",
+    clientTemplateId: "template_remember_client",
+    practitionerTemplateId: "template_Remember_COACH",
+    publicKey: "qC2qvWzXE2hpbuj80"
+  },
+  assessmentVersion: "RememberingReport-v1.0-production",
+  questionBankVersion: "QB-v1.0",
+  scoringVersion: "SC-v1.0"
+};
+emailjs.init({ publicKey: CONFIG.emailjs.publicKey });
+
+const ESSENCE_COPY = {"EARTH": ["Earth-Based", "Your responses resonate most with meaning expressed through embodied life, relationships, tangible contribution and what can be lived in the world in front of you."], "STARSEED": ["Starseed / Interplanetary", "Your responses resonate most with possibility, pattern, unconventional perspectives and translating what could be into something meaningful. This is offered as a spiritual self-understanding lens, not an objective claim of origin."], "ANGELIC": ["Angelic", "Your responses resonate most with compassion, protection, restoration, reconciliation and service. This is offered as a spiritual self-understanding lens, not an objective claim of origin."]};
+const DETAIL_COPY = {"EARTH_HEARTH": ["The Hearth", "Meaning becomes especially vivid through belonging, continuity, relationship and the bonds that make life feel inhabited."], "EARTH_GARDEN": ["The Garden", "Meaning often comes through cultivation: tending growth over time and watching care become visible."], "EARTH_COMMONS": ["The Commons", "Meaning often comes through community, place, shared responsibility and making everyday systems more livable."], "STAR_HORIZON": ["The Horizon", "Meaning becomes vivid through possibility, future directions and unconventional ideas."], "STAR_PATTERN": ["The Pattern", "Meaning becomes vivid through systems, recurring themes, connections and synthesis."], "STAR_BRIDGE": ["The Bridge", "Meaning becomes vivid through translating unusual or future-facing ideas into forms others can actually use."], "ANGEL_SHELTER": ["The Shelter", "Meaning becomes vivid through protection, safety, advocacy and clearer boundaries."], "ANGEL_MERCY": ["The Mercy", "Meaning becomes vivid through compassion, restoration, comfort and helping pain feel less isolating."], "ANGEL_CONCORD": ["The Concord", "Meaning becomes vivid through reconciliation, harmony, mediation and renewed connection."]};
+const VOCATION_COPY = {"SERVER": ["Server", "support, steady and care for what helps people flourish"], "ARTISAN": ["Artisan", "create, design and bring new possibilities into form"], "WARRIOR": ["Warrior", "mobilize, advocate and move important things into action"], "SCHOLAR": ["Scholar", "study, clarify and preserve useful understanding"], "SAGE": ["Sage", "communicate, reframe and give ideas or experiences a voice"], "PRIEST": ["Priest", "awaken meaning, values and purposeful transformation"]};
+const MISSION_COPY = {"NURTURE": "strengthen, care for or make life more supportive", "CREATE": "bring something original into form", "MOBILIZE": "move people or systems toward action", "ILLUMINATE": "make complexity understandable", "EXPRESS": "give ideas, experiences or people a compelling voice", "AWAKEN": "reconnect people with meaning, values or larger purpose"};
+const STORY_COPY = {"NEW_ADVENTURER": ["The New Adventurer", "CALL", "A new chapter is asking for movement before you can know exactly where it leads. Your work is neither reckless leaping nor endless preparation, but one grounded step that lets experience teach you what thought alone cannot.", "You do not need the whole map to take the next honest step.", "Choose one small, reversible action toward what is calling you."], "INITIATOR": ["The Initiator", "CALL", "You may be closer to beginning than you think. Resources, experience or ideas are already available; this chapter asks you to claim your ability to use them.", "I can begin with what I already have.", "Use one resource already in your hands within the next 48 hours."], "INNER_LISTENER": ["The Inner Listener", "CALL", "Your inner world may be especially active. Intuition, imagination, memory and subtle impressions can all carry information, but they are not identical. This chapter asks for self-trust with discernment.", "I can listen inwardly without abandoning discernment.", "Write three columns: What I know / What I sense / What I still need to learn."], "HOPE_BEARER": ["The Hope Bearer", "CALL", "A better possibility is becoming visible. Hope is useful here when it becomes participation rather than passive waiting.", "Hope becomes powerful when I give it feet.", "Choose one action that makes the hoped-for future slightly more real."], "KEEPER": ["The Keeper of the Rules", "THRESHOLD", "Inherited rules, expectations or ideas about what a good person is supposed to do may be competing with your own values.", "I can honor wisdom without surrendering my inner authority.", "Name one rule you are questioning and ask: Who taught me this, and does it still fit?"], "CHOOSER": ["The Chooser", "THRESHOLD", "Two loyalties, identities or possible futures may be competing for the same decision. Your next task is not to make every part equally comfortable, but to make the conflict explicit and choose congruently.", "A congruent choice does not need universal approval.", "Identify the decision you keep postponing and the value each option protects."], "PATHFINDER": ["The Pathfinder", "THRESHOLD", "Momentum matters to you, but effort can quietly become overdrive. This chapter asks you to move without making pressure your fuel.", "Steadiness can move me farther than force.", "Reduce one task by 20% and notice whether progress actually suffers."], "NIGHT_TRAVELER": ["The Night Traveler", "THRESHOLD", "Uncertainty may quickly invite imagined possibilities, worry or projection. The invitation is grounded discernment: honor what you sense while waiting for enough evidence to decide what it means.", "Uncertainty is not the same thing as danger.", "For one week, separate facts, interpretations and feared possibilities before acting."], "COURAGE_KEEPER": ["The Courage Keeper", "TRIALS", "Strength is being redefined. You do not have to suppress vulnerability to remain capable; regulated courage can include softness, support and feeling.", "I can be strong without abandoning tenderness.", "When emotion rises, stay present for 90 seconds before fixing or escaping it."], "WISE_SEEKER": ["The Wise Seeker", "TRIALS", "Reflection can bring wisdom, but solitude can become isolation. This chapter asks you to keep the lantern without disappearing from relationship.", "Wisdom deepens when reflection and connection can coexist.", "Share one insight with a trusted person instead of carrying it alone."], "CYCLE_WALKER": ["The Cycle Walker", "TRIALS", "Change may be reminding you that not everything is controllable. Your work is to distinguish what is changing around you from what remains yours to influence.", "I can adapt without becoming powerless.", "List three things outside your control and three actions that are still yours."], "TRUTH_BALANCER": ["The Truth Balancer", "TRIALS", "Accountability matters, but mistakes do not need to become verdicts about your worth. Accuracy is more useful than punishment.", "Truth can guide me without becoming a weapon against me.", "Name one mistake, its actual impact, what is yours to own, and one proportionate repair."], "BOUND_ONE": ["The Bound One", "TRIALS", "A familiar habit, attachment or relief-seeking loop may sometimes feel as though it makes the choice before you do. Understanding the promise behind the loop can create a gap where another choice becomes possible.", "Naming the promise behind the loop can loosen the chain without adding shame.", "Before one familiar urge, pause and ask: What relief is this promising me?"], "SURRENDERED_SEEKER": ["The Surrendered Seeker", "TRANSFORMATION", "You may be waiting for the perspective, certainty or readiness that finally makes action obvious. Reflection can be wise, but some clarity arrives only after movement.", "A pause can be purposeful without becoming permanent.", "Choose one small experiment with a clear review date."], "RELEASER": ["The Releaser", "TRANSFORMATION", "Part of your story may already be complete even though identity, habit or hope has not fully caught up. Releasing an ending does not erase its meaning.", "I can honor what was real without requiring the old chapter to continue.", "Write: What ended / What remains mine / What I am ready to stop carrying."], "INTEGRATOR": ["The Integrator", "TRANSFORMATION", "Extremes may have taught you a great deal, but sustainable change asks for a middle path you can actually live repeatedly.", "Consistency matters more than intensity.", "Practice the 70% version of one habit for seven days."], "DISRUPTED_BUILDER": ["The Disrupted Builder", "TRANSFORMATION", "When something important changes unexpectedly, the nervous system can treat the whole future as unstable. Your next resource is enough groundedness to identify what is real, intact and actionable now.", "Before rebuilding the whole future, I can find the next stable stone.", "Name three things that still stand and one practical next action."], "CREATIVE_MOTHER": ["The Creative Mother", "GIFT", "Something in you wants to grow, and growth requires nourishment as well as effort. Receiving, rest and sensory presence are part of creation, not rewards after depletion.", "What I nourish can grow; I belong inside the circle of care.", "Give the thing you want to grow one form of nourishment before giving more away."], "STEWARD": ["The Steward", "GIFT", "Your priorities may need a stronger container. Structure, boundaries and grounded authority can protect what matters without turning into control.", "I can create structure that serves life rather than constrains it.", "Create one boundary, calendar block or decision rule that protects a priority."], "RADIANT_SELF": ["The Radiant Self", "GIFT", "Your outer expression is asking to match what you increasingly know inwardly. Visibility does not have to mean performance; it can be practiced in tolerable, authentic doses.", "I can be seen without becoming someone else.", "Share one true thing in a slightly more visible way than usual."], "AWAKENING_CALLER": ["The Awakening Caller", "GIFT", "A calling is becoming harder to ignore. This chapter asks you to stop repeatedly asking whether you are qualified to hear it and begin testing it through committed action.", "I can answer the call through one real commitment.", "Choose one action that turns calling into participation this week."], "RETURNING_SOVEREIGN": ["The Returning Sovereign", "RETURN", "You are being asked to bring what you have learned back into ordinary life as stewardship, contribution or leadership. Integration now matters more than endless self-improvement.", "I do not need to be finished to contribute what I have learned.", "Choose one way to bring the boon back: teach, serve, create, lead or model."]};
+const VEIL_COPY = {"MOON": ["Night Traveler Pattern", "Fear & Projection Veil", "uncertainty becomes imagined danger", "grounded discernment", "For seven days, pause before acting on uncertainty and write: fact / interpretation / fear / next verifiable step."], "CHARIOT": ["Pathfinder Pattern", "Overdrive Veil", "pushing replaces regulated movement", "paced momentum", "For seven days, notice one moment of over-effort and deliberately choose a steadier pace rather than adding more force."], "HIERO": ["Keeper of the Rules Pattern", "Inherited Authority Veil", "external rules overpower authentic values", "inner authority", "For seven days, catch one 'I should' each day and ask whose rule it is, what value it protects, and what you choose now."], "TOWER": ["Disrupted Builder Pattern", "Disruption Veil", "destabilization is interpreted as total collapse", "grounded stabilization", "For seven days, when disruption rises, name what is still stable before deciding what the change means."], "SUN": ["Hidden Radiance Pattern", "Visibility Veil", "anticipated judgment leads to self-concealment", "authentic expression", "For seven days, practice one small act of safe visibility that does not require you to perform a version of yourself."], "EMPRESS": ["Overgiving Creator Pattern", "Depletion Veil", "nourishment is sacrificed to service or output", "receiving and generativity", "For seven days, pair one act of giving with one deliberate act of replenishment and notice what changes."], "EMPEROR": ["Overresponsible Steward Pattern", "Control Veil", "safety is sought through excessive control", "grounded authority", "For seven days, separate what is your responsibility from what is merely within your awareness."], "DEVIL": ["Bound Pattern", "Attachment Veil", "short-term relief overrides longer-term freedom", "self-possession", "For seven days, identify the promise behind one recurring relief-seeking loop before deciding whether to follow it."], "HANGED": ["Waiting Pattern", "Suspension Veil", "reflection becomes immobilization", "receptive movement", "For seven days, replace one more round of thinking with a small reversible experiment."], "DEATH": ["Threshold-of-Ending Pattern", "Release Veil", "attachment keeps an expired identity active", "liberating transition", "For seven days, notice what you continue doing only because an old chapter once required it."], "JUSTICE": ["Inner Judge Pattern", "Self-Judgment Veil", "accountability becomes condemnation", "integrity without shame", "For seven days, replace global self-judgment with four questions: what happened, impact, what is mine, what repair is proportionate?"], "LOVERS": ["Crossroads Pattern", "Divided Choice Veil", "competing loyalties prevent commitment", "congruent choice", "For seven days, name the value on each side of one unresolved choice and the cost of continued non-choice."]};
+const LEVEL_COPY = {"1": ["REMEMBER", "Remembering Report / Your Soul Signature", "self-recognition and clearer language for what feels uniquely yours"], "2": ["RECOGNIZE", "From Stuck to Momentum", "seeing the recurring pattern while it is happening"], "3": ["REWRITE", "The Spells We Tell Ourselves", "changing repeated beliefs, language and meaning that maintain the loop"], "4": ["REALIGN", "Somatic Realignment / Inner Compass", "helping embodied responses catch up with cognitive insight"], "5": ["CHOOSE", "Choose to Own Your Adventure™", "making identity-consistent choices from values, boundaries and self-trust"], "6": ["CROSS", "Cross the Threshold / Purpose Project", "turning clarity into a real-world purpose experiment"], "7": ["EMBODY", "Divine Vessel", "sustaining stewardship, contribution and return-to-alignment"]};
+const ESSENCE_Q = [["E01", "When you think about what makes life meaningful, which feels closest?", [["EARTH", "Fully participating in relationships, work, creativity and ordinary human life."], ["STARSEED", "Exploring possibilities beyond conventional ways of thinking or organizing life."], ["ANGELIC", "Helping restore, protect, comfort or reconcile what feels wounded or divided."]]], ["E02", "Which frustration feels most familiar?", [["EARTH", "I have ideas and values, but I want them to become something tangible."], ["STARSEED", "I often see possibilities that other people do not seem ready to consider."], ["ANGELIC", "I notice suffering or disharmony and feel compelled to help."]]], ["E03", "What most naturally captures your attention?", [["EARTH", "What can be built, improved or made workable in everyday life."], ["STARSEED", "Patterns, possibilities and perspectives that challenge the usual explanation."], ["ANGELIC", "The emotional, relational or spiritual well-being of people involved."]]], ["E04", "Which kind of contribution leaves you most satisfied?", [["EARTH", "Creating something useful, stable or tangible that improves real life."], ["STARSEED", "Introducing a fresh possibility, framework or future-oriented way of seeing."], ["ANGELIC", "Helping someone feel safer, restored, connected or more whole."]]], ["E05", "Which experience drains you most?", [["EARTH", "Too much abstraction without a practical next step."], ["STARSEED", "Feeling constrained by rigid assumptions or 'this is how it has always been done.'"], ["ANGELIC", "Being around unresolved pain, conflict or suffering I cannot help ease."]]], ["E06", "When you feel deeply aligned, which statement fits best?", [["EARTH", "I feel present, rooted and able to participate fully in the life in front of me."], ["STARSEED", "I feel free to explore, imagine and translate unusual possibilities into something meaningful."], ["ANGELIC", "I feel connected to compassion, protection, reconciliation and service."]]]];
+const DETAIL_Q = {"EARTH": [["SD-E1", "Which setting makes meaning feel most vivid?", [["EARTH_HEARTH", "A place where people feel they belong."], ["EARTH_GARDEN", "A place where something can be tended and grow."], ["EARTH_COMMONS", "A shared place or system that works better for everyone."]]], ["SD-E2", "What kind of result feels most personal?", [["EARTH_HEARTH", "A stronger sense of home or continuity."], ["EARTH_GARDEN", "Seeing something I cared for flourish."], ["EARTH_COMMONS", "Improving a shared environment or everyday system."]]], ["SD-E3", "What do you protect most instinctively?", [["EARTH_HEARTH", "Relationships and belonging."], ["EARTH_GARDEN", "Growth that needs time and tending."], ["EARTH_COMMONS", "Shared wellbeing and fair participation."]]], ["SD-E4", "Which form of care feels most natural?", [["EARTH_HEARTH", "Creating warmth, continuity and connection."], ["EARTH_GARDEN", "Cultivating something tangible over time."], ["EARTH_COMMONS", "Making a community or system more livable."]]], ["SD-E5", "Which loss would bother you most?", [["EARTH_HEARTH", "Losing a sense of home or belonging."], ["EARTH_GARDEN", "Watching something I nurtured fail to develop."], ["EARTH_COMMONS", "Seeing a shared space or system become less workable."]]], ["SD-E6", "Which sentence fits best?", [["EARTH_HEARTH", "Belonging is soil for everything else I build."], ["EARTH_GARDEN", "I trust what grows through patient care."], ["EARTH_COMMONS", "Meaning grows when everyday life works better for more people."]]]], "STARSEED": [["SD-S1", "Which experience most naturally energizes you?", [["STAR_HORIZON", "A possibility nobody has tried yet."], ["STAR_PATTERN", "A connection that makes many pieces suddenly make sense."], ["STAR_BRIDGE", "Making an unconventional idea usable for others."]]], ["SD-S2", "What comes first when you meet a new idea?", [["STAR_HORIZON", "Where could this lead?"], ["STAR_PATTERN", "How does this connect with everything else?"], ["STAR_BRIDGE", "How could this cross into practical life?"]]], ["SD-S3", "Which contribution feels most like yours?", [["STAR_HORIZON", "Opening a new possibility."], ["STAR_PATTERN", "Revealing a larger pattern."], ["STAR_BRIDGE", "Translating an unusual possibility into usable form."]]], ["SD-S4", "Which frustration is strongest?", [["STAR_HORIZON", "People dismissing possibility too quickly."], ["STAR_PATTERN", "People treating connected things as separate."], ["STAR_BRIDGE", "Good ideas staying too abstract to help anyone."]]], ["SD-S5", "What feels like a gift?", [["STAR_HORIZON", "Future imagination."], ["STAR_PATTERN", "Systems synthesis."], ["STAR_BRIDGE", "Translation and integration."]]], ["SD-S6", "Which sentence fits best?", [["STAR_HORIZON", "I notice what could exist beyond current assumptions."], ["STAR_PATTERN", "I notice relationships among things others keep separate."], ["STAR_BRIDGE", "I want unusual ideas to become understandable and usable."]]]], "ANGELIC": [["SD-A1", "What do you notice first when someone is distressed?", [["ANGEL_SHELTER", "What would make this safer?"], ["ANGEL_MERCY", "What would help this hurt less and feel less alone?"], ["ANGEL_CONCORD", "What is keeping connection from being restored?"]]], ["SD-A2", "Which outcome draws you most?", [["ANGEL_SHELTER", "Clearer protection and boundaries."], ["ANGEL_MERCY", "Comfort, restoration and renewed strength."], ["ANGEL_CONCORD", "A more workable relationship among divided sides."]]], ["SD-A3", "Which form of help feels more natural?", [["ANGEL_SHELTER", "Advocacy and protection."], ["ANGEL_MERCY", "Compassion and restoration."], ["ANGEL_CONCORD", "Reconciliation and renewed connection."]]], ["SD-A4", "What feels most important in care?", [["ANGEL_SHELTER", "Safety."], ["ANGEL_MERCY", "Mercy."], ["ANGEL_CONCORD", "Harmony with truth."]]], ["SD-A5", "What are you most likely to offer?", [["ANGEL_SHELTER", "A boundary or protective plan."], ["ANGEL_MERCY", "Presence that helps someone feel less alone."], ["ANGEL_CONCORD", "Language that helps people move toward understanding."]]], ["SD-A6", "Which sentence fits best?", [["ANGEL_SHELTER", "Protection creates room for life to breathe."], ["ANGEL_MERCY", "Compassion can help restore what pain has narrowed."], ["ANGEL_CONCORD", "Reconnection matters when it can happen with honesty and safety."]]]]};
+const VOCATION_Q = [["V01", "A group you care about is struggling. What do you notice yourself wanting to do first?", [["SERVER", "Make sure the people most affected are supported."], ["ARTISAN", "Imagine a different way the situation could be approached."], ["WARRIOR", "Take action and get things moving."], ["SCHOLAR", "Understand what is actually happening before deciding."], ["SAGE", "Find language that helps everyone understand it differently."], ["PRIEST", "Reconnect the group with the deeper meaning or purpose involved."]]], ["V02", "You are given an open-ended project. Which role do you naturally gravitate toward?", [["SERVER", "Make it useful and supportive for the people it serves."], ["ARTISAN", "Shape something original, beautiful or inventive."], ["WARRIOR", "Set a target and drive it toward completion."], ["SCHOLAR", "Research, organize and make the system make sense."], ["SAGE", "Give it a compelling voice, message or story."], ["PRIEST", "Ensure it serves a meaningful transformation or calling."]]], ["V03", "A conflict is stalling progress. What contribution feels most natural?", [["SERVER", "Help each person feel heard and cared for."], ["ARTISAN", "Find a creative option no one has tried."], ["WARRIOR", "Name the issue directly and move toward resolution."], ["SCHOLAR", "Separate facts, assumptions and missing information."], ["SAGE", "Reframe the conversation so people can hear each other."], ["PRIEST", "Bring everyone back to the values or purpose underneath the conflict."]]], ["V04", "You enter a room where no one knows what to do next. What do you instinctively offer?", [["SERVER", "Notice who needs support and quietly strengthen the group."], ["ARTISAN", "Offer an unconventional solution or prototype."], ["WARRIOR", "Organize action and establish momentum."], ["SCHOLAR", "Ask the questions that clarify what is really going on."], ["SAGE", "Give the group a clear message, narrative or rallying point."], ["PRIEST", "Name the deeper purpose and invite people back into alignment."]]], ["V05", "You learn something important. What do you most want to do with it?", [["SERVER", "Use it to help someone who needs it."], ["ARTISAN", "Turn it into something new or expressive."], ["WARRIOR", "Apply it immediately to produce a result."], ["SCHOLAR", "Study it further and connect it to a larger body of knowledge."], ["SAGE", "Teach or communicate it in an engaging way."], ["PRIEST", "Use it to help people connect with meaning, values or transformation."]]], ["V06", "A community problem keeps repeating. Where does your attention go first?", [["SERVER", "Who is being underserved or unsupported?"], ["ARTISAN", "What new design or approach might solve this?"], ["WARRIOR", "What action or boundary has not yet been taken?"], ["SCHOLAR", "What pattern or missing evidence explains the recurrence?"], ["SAGE", "What conversation or message keeps failing?"], ["PRIEST", "What deeper value, belief or sense of purpose has been lost?"]]], ["V07", "Someone asks what makes your work meaningful. Which answer feels closest?", [["SERVER", "I make people's lives easier, safer or more supported."], ["ARTISAN", "I create what did not exist before."], ["WARRIOR", "I help people act, decide or move."], ["SCHOLAR", "I help people understand complexity."], ["SAGE", "I help people see, hear or express something differently."], ["PRIEST", "I help people reconnect with meaning and what they are here to serve."]]], ["V08", "When a plan fails, which response comes most naturally?", [["SERVER", "Check who needs help and restore stability."], ["ARTISAN", "Experiment with another possibility."], ["WARRIOR", "Regroup and take the next decisive action."], ["SCHOLAR", "Analyze what failed and why."], ["SAGE", "Change the framing or communication."], ["PRIEST", "Ask what the setback is revealing about purpose or alignment."]]], ["V09", "Which compliment would feel most deeply accurate?", [["SERVER", "You make people feel genuinely supported."], ["ARTISAN", "You see possibilities no one else sees."], ["WARRIOR", "You are brave enough to make things happen."], ["SCHOLAR", "You understand things deeply."], ["SAGE", "You know how to say what everyone is trying to say."], ["PRIEST", "You help people remember what truly matters."]]], ["V10", "If you had one day to contribute with no concern about status, what would you most want to do?", [["SERVER", "Care for or assist people directly."], ["ARTISAN", "Make, design or invent something."], ["WARRIOR", "Lead an effort that creates change."], ["SCHOLAR", "Study, investigate or organize knowledge."], ["SAGE", "Teach, speak, write or tell stories."], ["PRIEST", "Guide reflection, meaning, healing or spiritual growth."]]], ["V11", "When people seek you out, what are they most often hoping you will provide?", [["SERVER", "Steady support and practical care."], ["ARTISAN", "Original ideas and creative solutions."], ["WARRIOR", "Courage, advocacy and decisive movement."], ["SCHOLAR", "Analysis, research and reliable understanding."], ["SAGE", "Communication, perspective and expression."], ["PRIEST", "Guidance around meaning, values and transformation."]]], ["V12", "Which kind of legacy feels most meaningful?", [["SERVER", "People were better supported because I was here."], ["ARTISAN", "Something original exists because I created it."], ["WARRIOR", "Important change happened because I acted."], ["SCHOLAR", "Useful understanding was preserved or clarified."], ["SAGE", "Ideas and stories reached people because I gave them voice."], ["PRIEST", "People lived with greater meaning and alignment because I helped awaken it."]]]];
+const MISSION_Q = [["M01", "If your work could create one kind of change, which would satisfy you most?", [["NURTURE", "Strengthen, care for or make life more supportive."], ["CREATE", "Bring something original into form."], ["MOBILIZE", "Move people or systems toward action."], ["ILLUMINATE", "Make complexity understandable."], ["EXPRESS", "Give ideas, experiences or people a compelling voice."], ["AWAKEN", "Reconnect people with meaning, values or a larger sense of purpose."]]], ["M02", "Which effect do you most want your presence to have on other people?", [["NURTURE", "Strengthen, care for or make life more supportive."], ["CREATE", "Bring something original into form."], ["MOBILIZE", "Move people or systems toward action."], ["ILLUMINATE", "Make complexity understandable."], ["EXPRESS", "Give ideas, experiences or people a compelling voice."], ["AWAKEN", "Reconnect people with meaning, values or a larger sense of purpose."]]], ["M03", "When an idea matters to you, what do you most want to do with it?", [["NURTURE", "Strengthen, care for or make life more supportive."], ["CREATE", "Bring something original into form."], ["MOBILIZE", "Move people or systems toward action."], ["ILLUMINATE", "Make complexity understandable."], ["EXPRESS", "Give ideas, experiences or people a compelling voice."], ["AWAKEN", "Reconnect people with meaning, values or a larger sense of purpose."]]], ["M04", "Which description sounds most like impact to you?", [["NURTURE", "Strengthen, care for or make life more supportive."], ["CREATE", "Bring something original into form."], ["MOBILIZE", "Move people or systems toward action."], ["ILLUMINATE", "Make complexity understandable."], ["EXPRESS", "Give ideas, experiences or people a compelling voice."], ["AWAKEN", "Reconnect people with meaning, values or a larger sense of purpose."]]], ["M05", "Imagine your best work reaching many people. What is it doing for them?", [["NURTURE", "Strengthen, care for or make life more supportive."], ["CREATE", "Bring something original into form."], ["MOBILIZE", "Move people or systems toward action."], ["ILLUMINATE", "Make complexity understandable."], ["EXPRESS", "Give ideas, experiences or people a compelling voice."], ["AWAKEN", "Reconnect people with meaning, values or a larger sense of purpose."]]], ["M06", "At the end of a meaningful season of work, which result would make you think, 'Yes—that was worth doing'?", [["NURTURE", "Strengthen, care for or make life more supportive."], ["CREATE", "Bring something original into form."], ["MOBILIZE", "Move people or systems toward action."], ["ILLUMINATE", "Make complexity understandable."], ["EXPRESS", "Give ideas, experiences or people a compelling voice."], ["AWAKEN", "Reconnect people with meaning, values or a larger sense of purpose."]]]];
+const ZONE_Q = [["Z01", "Which sentence best describes the chapter you are in right now?", [["CALL", "Something is calling for change, but I am still identifying what it is."], ["THRESHOLD", "I can feel the threshold; I know change is needed but hesitate or feel divided."], ["TRIALS", "I am in the middle of tests, patterns or challenges that are asking me to grow."], ["TRANSFORMATION", "An old way of being is clearly changing, ending or being reorganized."], ["GIFT", "I am claiming clearer gifts, identity or direction and learning to trust them."], ["RETURN", "I want to live, lead or contribute from what I have learned more consistently."]]], ["Z02", "What feels most true about your movement?", [["CALL", "I am hearing the call."], ["THRESHOLD", "I am deciding whether to cross."], ["TRIALS", "I am learning through challenge."], ["TRANSFORMATION", "I am releasing and reorganizing."], ["GIFT", "I am claiming what is mine."], ["RETURN", "I am bringing what I learned back into life."]]], ["Z03", "What do you most need now?", [["CALL", "Clarity about what is calling me."], ["THRESHOLD", "Courage and congruent choice."], ["TRIALS", "Resources for the challenge."], ["TRANSFORMATION", "Permission to let an old chapter change."], ["GIFT", "Trust in my gifts and direction."], ["RETURN", "Consistency in contribution and stewardship."]]], ["Z04", "Which image feels closest?", [["CALL", "A door appearing in the distance."], ["THRESHOLD", "A hand on the door handle."], ["TRIALS", "A path through difficult terrain."], ["TRANSFORMATION", "A bridge between old and new."], ["GIFT", "Receiving something I am ready to use."], ["RETURN", "Carrying something valuable back home."]]]];
+const ZONE_ARCHETYPES = {"CALL": ["NEW_ADVENTURER", "INITIATOR", "INNER_LISTENER", "HOPE_BEARER"], "THRESHOLD": ["KEEPER", "CHOOSER", "PATHFINDER", "NIGHT_TRAVELER"], "TRIALS": ["COURAGE_KEEPER", "WISE_SEEKER", "CYCLE_WALKER", "TRUTH_BALANCER", "BOUND_ONE"], "TRANSFORMATION": ["SURRENDERED_SEEKER", "RELEASER", "INTEGRATOR", "DISRUPTED_BUILDER"], "GIFT": ["CREATIVE_MOTHER", "STEWARD", "RADIANT_SELF", "AWAKENING_CALLER"], "RETURN": ["INTEGRATOR", "RADIANT_SELF", "AWAKENING_CALLER", "RETURNING_SOVEREIGN"]};
+const REFINE_PROMPTS = ["What tension feels most familiar in this chapter?", "What resource feels most important to develop now?", "Which next move feels most honest?"];
+const VEIL_SCREEN = [["MOON", "When I do not have enough information, my mind can quickly fill the gaps with possibilities that make me anxious or uncertain."], ["CHARIOT", "When something matters to me, I tend to push harder even when my body or energy is telling me to slow down."], ["HIERO", "I sometimes know what I want but hesitate because part of me wonders what I am 'supposed' to do."], ["TOWER", "When something important changes unexpectedly, it can feel as though much more of my life is falling apart than the situation itself."], ["SUN", "I want to be seen for what I can contribute, yet becoming more visible can also feel strangely unsafe."], ["EMPRESS", "I find it easier to nurture other people, projects or responsibilities than to consistently nourish myself."], ["EMPEROR", "I feel safer when I can anticipate, organize or control what happens, and I can become tense when I cannot."], ["DEVIL", "I sometimes repeat a habit, attachment or relief-seeking behavior even when I know it costs me something important."], ["HANGED", "I can stay in reflection, waiting or preparation so long that movement becomes difficult."], ["DEATH", "I can recognize that a chapter, role or identity is complete and still have difficulty releasing it."], ["JUSTICE", "When I make a mistake, responsibility can quickly turn into harsh self-judgment."], ["LOVERS", "I can remain caught between competing loyalties, identities or futures even after I understand the options."]];
+const VEIL_CONFIRM = {"MOON": ["Before I have enough evidence, I can treat a feared possibility as though it is already becoming true.", "When I am tired, activated or uncertain, it becomes harder to distinguish what I know from what I fear or imagine."], "CHARIOT": ["Rest can feel like losing momentum, so I keep going past the point where slowing down would help.", "I often respond to stuckness by adding more effort rather than changing pace or strategy."], "HIERO": ["I look outside myself for permission or the 'right' way even when my values are already trying to tell me something.", "Rules I learned from family, religion, culture or authority can remain powerful even after I consciously disagree with them."], "TOWER": ["One destabilizing event can make my mind predict that other parts of life are about to collapse too.", "During major change, I need help identifying what is still stable before I can think clearly about what comes next."], "SUN": ["I can minimize my gifts or make myself smaller to avoid judgment, envy, criticism or unwanted attention.", "Visibility opportunities excite me and frighten me at the same time."], "EMPRESS": ["I can give from an empty tank and then wonder why creativity, patience or desire disappears.", "Receiving care, rest, pleasure or support can feel less natural than providing it."], "EMPEROR": ["Uncertainty can trigger an urge to manage more details, people or outcomes.", "Delegating, waiting or allowing another person to do something differently can create disproportionate tension for me."], "DEVIL": ["In the moment, a familiar behavior can feel more compelling than the longer-term freedom I say I want.", "I sometimes organize my choices around avoiding discomfort rather than around my stated values."], "HANGED": ["I can mistake more thinking, learning or waiting for progress even when a small experiment would teach me more.", "I sometimes tell myself I need one more insight before I can take the next reasonable step."], "DEATH": ["I can keep revisiting an expired role, relationship, identity or plan because releasing it feels like losing part of myself.", "I may know what needs to end before I have emotionally allowed the ending to be real."], "JUSTICE": ["I can turn 'I did something I regret' into 'there is something wrong with me.'", "I find it easier to identify what I did wrong than to identify a proportionate repair and move forward."], "LOVERS": ["I delay commitment because choosing one direction feels like betraying another person, identity or possibility.", "Even after I know my values, competing loyalties can keep me from acting on them."]};
+const PLACEMENT = [["P01", "I have difficulty putting words to who I really am, what matters most to me, or what feels uniquely mine."], ["P02", "I know something keeps me stuck, but I cannot clearly see the pattern while it is happening."], ["P03", "I recognize the pattern, but the same beliefs or inner dialogue continue to pull me back into it."], ["P04", "I understand what I want to change intellectually, but my body, emotions or automatic reactions do not seem to have caught up."], ["P05", "I understand myself better, but I still struggle to consistently make decisions from the person I want to become."], ["P06", "I have a growing sense of who I am and now want to turn that clarity into meaningful work, contribution or purpose."], ["P07", "I know what I am called toward and want support living, leading and contributing from it consistently."]];
+
+const state = {
+  phase:"essence", queue:[], index:0, answers:{}, scored:{},
+  essenceScores:{}, detailScores:{}, vocationScores:{}, missionScores:{}, zoneScores:{},
+  storyScores:{}, veilScreen:{}, veilConfirm:{}, placement:{},
+  essence:null, detail:null, vocation:null, mission:null, zone:null, story:null,
+  primaryVeil:null, supportingVeil:null, veilConfidence:null, entryLevel:null
+};
+const $=id=>document.getElementById(id);
+const shuffled=a=>[...a].sort(()=>Math.random()-.5);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const topKeys=obj=>Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+
+function setChapter(n){
+  [...document.querySelectorAll(".chap")].forEach((el,i)=>{el.className="chap"+(i<n?" done":i===n?" active":"")});
+}
+function setQueue(q, phase){state.queue=q;state.phase=phase;state.index=0;render();}
+function scorePick(store,key,pts=2){store[key]=(store[key]||0)+pts;}
+function render(){
+  const q=state.queue[state.index]; if(!q){advance();return}
+  $("qmeta").textContent = `${phaseLabel()} · ${state.index+1} of ${state.queue.length}`;
+  $("question").textContent=q.prompt;
+  $("opts").innerHTML="";
+  shuffled(q.options).forEach(([value,label])=>{
+    const b=document.createElement("button"); b.className="opt"; b.type="button"; b.textContent=label; b.dataset.value=value;
+    if(state.answers[q.id]===value)b.classList.add("selected");
+    b.onclick=()=>{state.answers[q.id]=value; [...$("opts").children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected");$("next").disabled=false;};
+    $("opts").appendChild(b);
+  });
+  $("next").disabled=!state.answers[q.id]; $("back").disabled=state.index===0;
+  const pct = Math.min(100, ((state.index+1)/state.queue.length)*100);
+  $("bar").style.width=pct+"%";
+}
+function phaseLabel(){return ({essence:"Remember · Essence",detail:"Remember · Soul Detail",vocation:"Gifts · Soul Signature",mission:"Gifts · Mission Style",zone:"Story · Chapter",story:"Story · Archetype",veilScreen:"Threshold · Pattern Screen",veilConfirm:"Threshold · Clarify",placement:"Next Chapter · Placement"})[state.phase]||"Remembering"}
+function currentAnswer(){return state.answers[state.queue[state.index].id]}
+function commitCurrent(){
+ const q=state.queue[state.index], a=currentAnswer(); if(a==null)return;
+ const old=state.scored[q.id];
+ function revise(store){ if(old!=null) store[old]=(store[old]||0)-2; store[a]=(store[a]||0)+2; }
+ if(state.phase==="essence")revise(state.essenceScores);
+ if(state.phase==="detail")revise(state.detailScores);
+ if(state.phase==="vocation")revise(state.vocationScores);
+ if(state.phase==="mission")revise(state.missionScores);
+ if(state.phase==="zone")revise(state.zoneScores);
+ if(state.phase==="story")revise(state.storyScores);
+ if(state.phase==="veilScreen")state.veilScreen[q.code]=Number(a);
+ if(state.phase==="veilConfirm"){ if(!state.veilConfirm[q.code])state.veilConfirm[q.code]=[]; state.veilConfirm[q.code][q.ci]=Number(a); }
+ if(state.phase==="placement")state.placement[q.level]=Number(a);
+ state.scored[q.id]=a;
+}
+$("next").onclick=()=>{commitCurrent(); state.index++; render();}
+$("back").onclick=()=>{if(state.index>0){state.index--;render();}}
+$("start").onclick=()=>{
+ $("intro").classList.add("hidden");$("quiz").classList.remove("hidden");setChapter(0);
+ setQueue(ESSENCE_Q.map(([id,prompt,options])=>({id,prompt,options})),"essence");
+};
+
+function advance(){
+ if(state.phase==="essence"){
+   state.essence=topKeys(state.essenceScores)[0]; setChapter(0);
+   setQueue(DETAIL_Q[state.essence].map(([id,prompt,options])=>({id,prompt,options})),"detail"); return;
+ }
+ if(state.phase==="detail"){
+   state.detail=topKeys(state.detailScores)[0]; setChapter(1);
+   setQueue(VOCATION_Q.map(([id,prompt,options])=>({id,prompt,options})),"vocation"); return;
+ }
+ if(state.phase==="vocation"){
+   state.vocation=topKeys(state.vocationScores)[0]; setChapter(1);
+   setQueue(MISSION_Q.map(([id,prompt,options])=>({id,prompt,options})),"mission"); return;
+ }
+ if(state.phase==="mission"){
+   state.mission=topKeys(state.missionScores)[0]; setChapter(2);
+   setQueue(ZONE_Q.map(([id,prompt,options])=>({id,prompt,options})),"zone"); return;
+ }
+ if(state.phase==="zone"){
+   state.zone=topKeys(state.zoneScores)[0]; setChapter(2);
+   const candidates=ZONE_ARCHETYPES[state.zone];
+   const qs=REFINE_PROMPTS.map((p,i)=>({id:`ST-${state.zone}-${i+1}`,prompt:p,options:candidates.map(k=>[k,STORY_COPY[k][i===0?2:i===1?3:4]||STORY_COPY[k][0]])}));
+   setQueue(qs,"story"); return;
+ }
+ if(state.phase==="story"){
+   state.story=topKeys(state.storyScores)[0]||ZONE_ARCHETYPES[state.zone][0]; setChapter(3);
+   const qs=VEIL_SCREEN.map(([code,prompt])=>({id:"VS-"+code,code,prompt,options:[[0,"Not like me"],[1,"Occasionally"],[2,"Sometimes"],[3,"Often"],[4,"Very much like me"]]}));
+   setQueue(qs,"veilScreen"); return;
+ }
+ if(state.phase==="veilScreen"){
+   const finalists=Object.entries(state.veilScreen).sort((a,b)=>b[1]-a[1]).slice(0,4).map(x=>x[0]);
+   state.finalists=finalists;
+   const qs=[]; finalists.forEach(code=>VEIL_CONFIRM[code].forEach((prompt,ci)=>qs.push({id:`VC-${code}-${ci}`,code,ci,prompt,options:[[0,"Not like me"],[1,"Occasionally"],[2,"Sometimes"],[3,"Often"],[4,"Very much like me"]]})));
+   setQueue(qs,"veilConfirm"); return;
+ }
+ if(state.phase==="veilConfirm"){
+   const composites={};
+   state.finalists.forEach(code=>{
+      const screen=(state.veilScreen[code]/4)*100;
+      const arr=state.veilConfirm[code]||[0,0];
+      const conf=((arr[0]+arr[1])/8)*100;
+      composites[code]=.35*screen+.65*conf;
+   });
+   state.veilComposite=composites;
+   const ranked=Object.entries(composites).sort((a,b)=>b[1]-a[1]);
+   state.primaryVeil=ranked[0]?.[1] >=35 ? ranked[0][0] : null;
+   state.supportingVeil=ranked[1]?.[0]||null;
+   const margin=(ranked[0]?.[1]||0)-(ranked[1]?.[1]||0);
+   state.veilConfidence=!state.primaryVeil?"LOW":margin>=15?"HIGH":margin>=8?"MODERATE":"BLENDED";
+   setChapter(4);
+   setQueue(PLACEMENT.map(([id,prompt],i)=>({id,level:i+1,prompt,options:[[0,"Not true for me"],[1,"A little true"],[2,"Somewhat true"],[3,"Mostly true"],[4,"Very true"]]})),"placement"); return;
+ }
+ if(state.phase==="placement"){
+   let entry=null;
+   for(let i=1;i<=7;i++){if((state.placement[i]||0)>=3){entry=i;break}}
+   if(!entry){entry=Object.entries(state.placement).sort((a,b)=>b[1]-a[1])[0]?.[0]||1}
+   state.entryLevel=Number(entry);
+   $("quiz").classList.add("hidden");$("intake").classList.remove("hidden");$("bar").style.width="100%";window.scrollTo({top:0,behavior:"smooth"}); return;
+ }
+}
+
+function buildProfile(){
+ const first=$("firstName").value.trim(), email=$("email").value.trim(), phone=$("phone").value.trim();
+ const story=STORY_COPY[state.story], primary=state.primaryVeil?VEIL_COPY[state.primaryVeil]:null, supporting=state.supportingVeil?VEIL_COPY[state.supportingVeil]:null;
+ const level=LEVEL_COPY[state.entryLevel];
+ const central=primary
+   ? `Your ${VOCATION_COPY[state.vocation][0]} gift wants to ${VOCATION_COPY[state.vocation][1]}, while the ${primary[0]} may pull you toward a familiar loop where ${primary[2]}. Your developmental invitation is ${primary[3]}.`
+   : `No single threshold pattern dominated strongly. Your next chapter is best explored from your stated goal, your current story and the resource that feels most useful now.`;
+ return {
+   lead:{firstName:first,email,phone,marketingConsent:$("marketing").checked,spiritualConsent:$("spiritual").checked},
+   intake:{storySelf:$("storySelf").value,lifeArea:$("lifeArea").value,goal90:$("goal90").value.trim(),obstacle:$("obstacle").value.trim(),possibility:$("possibility").value.trim(),whyNow:$("whyNow").value.trim()},
+   essence:{code:state.essence,name:ESSENCE_COPY[state.essence][0],narrative:ESSENCE_COPY[state.essence][1],scores:state.essenceScores},
+   soulDetail:{code:state.detail,name:DETAIL_COPY[state.detail][0],narrative:DETAIL_COPY[state.detail][1],scores:state.detailScores},
+   vocation:{code:state.vocation,name:VOCATION_COPY[state.vocation][0],gift:VOCATION_COPY[state.vocation][1],scores:state.vocationScores},
+   mission:{code:state.mission,name:state.mission,expression:MISSION_COPY[state.mission],scores:state.missionScores},
+   story:{code:state.story,name:story[0],zone:story[1],narrative:story[2],remembering:story[3],next:story[4],scores:state.storyScores},
+   veil:{primaryCode:state.primaryVeil,primaryName:primary?.[0]||"No single pattern strongly surfaced",practitionerName:primary?.[1]||"Low signal",primaryNarrative:primary?`A ${primary[0]} may be active when ${primary[2]}. The restorative direction is ${primary[3]}.`:"A few themes are worth exploring, but no single pattern clearly dominated.",supportingCode:state.supportingVeil,supportingName:supporting?.[0]||"",supportingNarrative:supporting?`A supporting ${supporting[0]} may also be worth exploring.`:"",confidence:state.veilConfidence,composites:state.veilComposite||{}},
+   placement:{entryLevel:state.entryLevel,name:level[0],program:level[1],invitation:level[2],scores:state.placement},
+   centralTension:central,
+   sevenDay:primary?.[4] || "For seven days, notice one moment each day when you feel most aligned and one when you feel least aligned. Record what was happening, what you chose, and what you needed.",
+   meta:{assessmentVersion:CONFIG.assessmentVersion,questionBankVersion:CONFIG.questionBankVersion,scoringVersion:CONFIG.scoringVersion,completedAt:new Date().toISOString(),submissionId:(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36))}
+ };
+}
+function renderResult(p){
+ $("resultName").textContent=`${p.lead.firstName}'s Remembering Report`;
+ $("signatureGrid").innerHTML=[
+   ["Essence",p.essence.name],["Soul Detail",p.soulDetail.name],["Soul Signature",p.vocation.name],["Mission Style",p.mission.name],["Current Story",p.story.name],["Next Chapter",`${p.placement.name} · ${p.placement.program}`]
+ ].map(([a,b])=>`<div class="sig"><b>${esc(a)}</b>${esc(b)}</div>`).join("");
+ $("storyTitle").textContent=p.story.name;$("storyNarrative").textContent=p.story.narrative;
+ $("veilTitle").textContent=p.veil.primaryName;$("veilNarrative").textContent=p.veil.primaryNarrative;
+ if(p.veil.confidence==="LOW")$("supportingWrap").classList.add("hidden"); else {$("supportingWrap").classList.remove("hidden");$("supportingNarrative").textContent=p.veil.supportingNarrative;}
+ $("centralTension").textContent=p.centralTension;$("remembering").textContent=p.story.remembering;
+ $("nextChapter").textContent=`Your next developmental invitation is ${p.placement.invitation}. ${p.story.next}`;
+ $("sevenDay").textContent=p.sevenDay;
+ $("spiritualWrap").classList.toggle("hidden",!p.lead.spiritualConsent);
+ $("intake").classList.add("hidden");$("results").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});
+}
+function clientParams(p){
+ return {
+   first_name:p.lead.firstName, client_email:p.lead.email, client_phone:p.lead.phone,
+   logo_url:CONFIG.logoUrl, booking_url:CONFIG.bookingUrl,
+   essence_name:p.essence.name, essence_narrative:p.essence.narrative,
+   soul_detail_name:p.soulDetail.name, soul_detail_narrative:p.soulDetail.narrative,
+   soul_signature_name:p.vocation.name, soul_signature_gift:p.vocation.gift,
+   mission_style_name:p.mission.name, mission_style_expression:p.mission.expression,
+   story_name:p.story.name, story_narrative:p.story.narrative,
+   veil_client_name:p.veil.primaryName, veil_client_narrative:p.veil.primaryNarrative,
+   has_supporting_veil:p.veil.confidence!=="LOW", supporting_veil_client_name:p.veil.supportingName, supporting_veil_client_narrative:p.veil.supportingNarrative,
+   central_tension:p.centralTension, remembering_statement:p.story.remembering,
+   next_chapter_invitation:`${p.placement.name}: ${p.placement.invitation}. ${p.story.next}`,
+   seven_day_practice:p.sevenDay, has_spiritual_reflection:p.lead.spiritualConsent,
+   spiritual_reflection:p.lead.spiritualConsent?"Bring your next step into prayer with the question: What is mine to do faithfully now?":"",
+   recommended_level:`L${p.placement.entryLevel} ${p.placement.name}`, recommended_program:p.placement.program
+ };
+}
+function practitionerParams(p){
+ const veilScores=Object.entries(p.veil.composites).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}: ${v.toFixed(1)}`).join(" | ");
+ return {
+   practitioner_email:CONFIG.practitionerEmail, first_name:p.lead.firstName, client_email:p.lead.email, client_phone:p.lead.phone||"Not provided",
+   marketing_consent:p.lead.marketingConsent?"YES":"NO", spiritual_consent:p.lead.spiritualConsent?"YES":"NO",
+   story_self_description:p.intake.storySelf, life_area:p.intake.lifeArea, desired_90_day_change:p.intake.goal90, perceived_obstacle:p.intake.obstacle, possibility:p.intake.possibility, why_now:p.intake.whyNow,
+   essence_name:p.essence.name, essence_score:JSON.stringify(p.essence.scores), essence_confidence:"Adaptive profile",
+   soul_detail_name:p.soulDetail.name, soul_detail_confidence:"Adaptive branch",
+   soul_signature_name:p.vocation.name, soul_signature_score:JSON.stringify(p.vocation.scores), soul_signature_confidence:"Adaptive profile",
+   mission_style_name:p.mission.name,
+   story_name:p.story.name, story_tarot:"See practitioner crosswalk", story_zone:p.story.zone, story_practitioner_interpretation:p.story.narrative,
+   primary_veil_practitioner:p.veil.practitionerName, veil_client_name:p.veil.primaryName, primary_veil_score:p.veil.primaryCode?(p.veil.composites[p.veil.primaryCode]||0).toFixed(1):"Low signal",
+   veil_confidence:p.veil.confidence, supporting_veil_practitioner:p.veil.supportingCode?VEIL_COPY[p.veil.supportingCode][1]:"None", supporting_veil_score:p.veil.supportingCode?(p.veil.composites[p.veil.supportingCode]||0).toFixed(1):"",
+   veil_loop:p.centralTension, veil_score_summary:veilScores,
+   recommended_level:`L${p.placement.entryLevel} ${p.placement.name}`, recommended_program:p.placement.program,
+   placement_rationale:`Earliest materially unresolved prerequisite from P01–P07: ${p.placement.name}. Confirm against the client's stated goal.`,
+   working_hypothesis:`Provisional coaching hypothesis: ${p.centralTension}`,
+   limiting_belief_hypothesis:p.intake.obstacle||"Clarify during call.",
+   somatic_clues:"Ask what happens in the body immediately before the identified pattern becomes behavior.",
+   developmental_need:p.veil.primaryCode?VEIL_COPY[p.veil.primaryCode][3]:p.placement.invitation,
+   resource_state:p.veil.primaryCode?VEIL_COPY[p.veil.primaryCode][3]:"goal-led clarity",
+   signature_move_start:"Build collaboratively from the client's current state toward one believable resource state.",
+   emotion_progression:"Current state → accessible better state → stronger resource → empowered state → desired signature state",
+   nlp_target:"Clarify trigger → meaning → emotion → behavior; use reframing only after the mechanism is verified.",
+   somatic_tool:"Gentle orienting, breath/posture awareness and a client-chosen embodied anchor.",
+   handwriting_prescription:"Optional reflective handwriting cue; select only after clarifying the target behavior.",
+   prayer_option:p.lead.spiritualConsent?"Optional client-chosen prayer/scripture for discernment, courage or stewardship.":"No spiritual-language consent selected.",
+   protection_prescription:"Ordinary causes first; grounding, boundaries and environmental calming. Do not confirm supernatural threat.",
+   clarifying_questions:"What felt most accurate? Where does this show up behaviorally? What is the pattern trying to protect? What would a small successful change look like in seven days?",
+   call_plan:"Reflect → locate current story → clarify loop → identify cost/protective function → resource → developmental fit → experiment → offer appropriate next step.",
+   program_recommendation:`Explore ${p.placement.program} if the placement is confirmed in conversation.`,
+   safety_note:"Coaching hypothesis only, not diagnosis. Pause symbolic interpretation and refer appropriately for immediate danger, inability to function, severe sleep disruption, marked confusion, frightening perceptual experiences, self-harm risk or escalating compulsion.",
+   submission_id:p.meta.submissionId, completed_at:p.meta.completedAt
+ };
+}
+async function sendEmails(p){
+ const status=$("emailStatus"); status.className="note"; status.textContent="Creating your report and sending your email…";
+ try{
+   await emailjs.send(CONFIG.emailjs.serviceId,CONFIG.emailjs.clientTemplateId,clientParams(p));
+   await new Promise(r=>setTimeout(r,1300));
+   await emailjs.send(CONFIG.emailjs.serviceId,CONFIG.emailjs.practitionerTemplateId,practitionerParams(p));
+   status.className="success"; status.textContent="Your Remembering Report has been sent. Your personalized result is also displayed below.";
+ }catch(err){
+   console.error("EmailJS:",err);
+   status.className="warn"; status.textContent="Your on-screen report is ready, but the email delivery did not complete. Please save/print this page and contact ISABELL if you need the emailed copy.";
+ }
+}
+$("finish").onclick=async()=>{
+ const first=$("firstName").value.trim(), email=$("email").value.trim();
+ if(!first){alert("Please enter your first name.");$("firstName").focus();return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){alert("Please enter a valid email address.");$("email").focus();return}
+ $("finish").disabled=true;
+ const p=buildProfile(); renderResult(p); await sendEmails(p); $("finish").disabled=false;
+};
+</script>
+</body></html>
