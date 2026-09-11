@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Remember Your Story | Choose to Own Your Adventure™</title>
+  <meta name="description" content="A short interactive Remembering Story from Choose to Own Your Adventure™." />
+  <style>
+    :root{
+      --navy:#071a2f;
+      --navy2:#0b2845;
+      --gold:#d3ab58;
+      --gold2:#f0d792;
+      --paper:#f6f0df;
+      --ink:#16202b;
+      --muted:#738093;
+      --white:#fffdf8;
+      --danger:#b84b4b;
+      --ok:#4b7d66;
+      --shadow:0 24px 70px rgba(0,0,0,.28);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color:var(--paper);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(211,171,88,.13), transparent 32rem),
+        linear-gradient(160deg,var(--navy2),var(--navy) 55%,#03111f);
+    }
+    button,input{font:inherit}
+    button{cursor:pointer}
+    a{color:var(--gold2)}
+    .shell{width:min(980px,calc(100% - 28px));margin:0 auto;padding:22px 0 64px}
+    .brand{
+      display:flex;align-items:center;justify-content:center;gap:14px;
+      padding:12px 0 22px;text-align:center;
+    }
+    .brand img{width:84px;height:84px;object-fit:contain}
+    .brand-copy{line-height:1.05}
+    .brand-name{letter-spacing:.24em;font-size:1.05rem;color:var(--gold2)}
+    .brand-program{margin-top:8px;font-size:.72rem;letter-spacing:.14em;color:#dbc98f}
+    .book{
+      position:relative;
+      background:linear-gradient(90deg,#eee4cb 0,#fffaf0 8%,#fffdf8 50%,#fffaf0 92%,#eee4cb 100%);
+      color:var(--ink);
+      border:1px solid rgba(211,171,88,.55);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      min-height:610px;
+      overflow:hidden;
+    }
+    .book:before{
+      content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;
+      background:linear-gradient(transparent,rgba(117,92,47,.12),transparent);
+      opacity:.7;pointer-events:none;
+    }
+    .page{display:none;padding:clamp(30px,7vw,72px);min-height:610px;animation:turn .34s ease}
+    .page.active{display:block}
+    @keyframes turn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+    .eyebrow{font-size:.72rem;letter-spacing:.19em;text-transform:uppercase;color:#95702d;margin-bottom:16px}
+    h1,h2{font-weight:500;line-height:1.08;margin:0 0 22px}
+    h1{font-size:clamp(2.4rem,7vw,5.2rem)}
+    h2{font-size:clamp(1.8rem,5vw,3.15rem)}
+    .lede{font-size:clamp(1.05rem,2.6vw,1.32rem);line-height:1.72;max-width:720px}
+    .narrative{font-size:1.05rem;line-height:1.75;max-width:760px}
+    .narrative p{margin:.65em 0}
+    .choices{display:grid;gap:12px;margin-top:30px}
+    .choice{
+      width:100%;text-align:left;border:1px solid rgba(149,112,45,.32);
+      background:rgba(255,255,255,.62);padding:17px 19px;border-radius:16px;
+      color:var(--ink);transition:.16s ease;
+    }
+    .choice:hover,.choice:focus{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 8px 25px rgba(70,52,19,.09);outline:none}
+    .choice strong{display:block;color:#72531d;letter-spacing:.035em;margin-bottom:4px}
+    .choice small{display:block;font-family:system-ui,sans-serif;color:#4e5968;line-height:1.4}
+    .duo{grid-template-columns:repeat(2,1fr)}
+    .chapter-note{
+      margin:30px 0 0;padding:22px;border-left:3px solid var(--gold);
+      background:rgba(211,171,88,.08);font-style:italic;line-height:1.65;
+    }
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .btn{
+      border:none;border-radius:999px;padding:14px 22px;font-weight:700;letter-spacing:.04em;
+      background:var(--navy);color:var(--gold2);box-shadow:0 7px 20px rgba(7,26,47,.2)
+    }
+    .btn.secondary{background:transparent;color:var(--navy);border:1px solid var(--navy);box-shadow:none}
+    .btn.gold{background:linear-gradient(135deg,#b9872d,#e0bd70);color:#101820}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .back{background:none;border:none;color:#655631;text-decoration:underline;padding:8px 0}
+    .save-card{
+      margin-top:26px;padding:25px;border-radius:18px;background:#f2ead6;border:1px solid #ddc999;
+    }
+    label{display:block;font-family:system-ui,sans-serif;font-size:.86rem;font-weight:700;margin:14px 0 6px}
+    input[type=text],input[type=email]{
+      width:100%;padding:13px 14px;border-radius:11px;border:1px solid #bcae8a;background:white;color:#17202a
+    }
+    .consent{display:flex;gap:10px;align-items:flex-start;font-family:system-ui,sans-serif;font-size:.8rem;line-height:1.45;margin-top:15px}
+    .consent input{margin-top:3px}
+    .error,.status{font-family:system-ui,sans-serif;font-size:.84rem;margin-top:12px}
+    .error{color:var(--danger)} .status{color:var(--ok)}
+    .progress{
+      display:flex;gap:7px;justify-content:center;margin:18px auto 0;
+      width:min(580px,100%)
+    }
+    .dot{height:4px;flex:1;border-radius:99px;background:rgba(211,171,88,.18)}
+    .dot.done,.dot.current{background:var(--gold)}
+    .check-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:25px}
+    .check{
+      display:flex;gap:10px;align-items:flex-start;padding:14px;border-radius:14px;
+      border:1px solid rgba(149,112,45,.26);background:rgba(255,255,255,.55);
+      font-family:system-ui,sans-serif;font-size:.9rem;line-height:1.42
+    }
+    .result-wrap{max-width:820px;margin:auto}
+    .result-title{text-align:center}
+    .result-title h1{font-size:clamp(2rem,6vw,4rem)}
+    .storyboard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:32px 0}
+    .panel{
+      min-height:190px;border:1px solid #cfb878;border-radius:18px;padding:17px;
+      background:linear-gradient(180deg,#0b2845,#071a2f);color:var(--paper);
+      display:flex;flex-direction:column;justify-content:space-between
+    }
+    .panel .roman{color:var(--gold2);font-size:.7rem;letter-spacing:.18em}
+    .panel .symbol{font-size:2.4rem;margin:12px 0}
+    .panel strong{color:var(--gold2)}
+    .story-section{padding:25px 0;border-top:1px solid rgba(149,112,45,.22)}
+    .story-section h3{color:#76591f;font-size:1.35rem;margin:0 0 10px}
+    .story-section p{line-height:1.76;margin:.4em 0}
+    .convergence{
+      margin:26px 0;padding:28px;border-radius:18px;background:var(--navy);color:var(--paper);
+      font-size:1.15rem;line-height:1.65;text-align:center
+    }
+    .mystery{padding:30px;background:#efe5ca;border-radius:18px}
+    .mystery h3{font-size:1.5rem;margin-top:0}
+    .cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:25px}
+    .cta{
+      border-radius:18px;padding:22px;border:1px solid #b8954d;background:#fffaf0;color:var(--ink)
+    }
+    .cta strong{display:block;color:#70521d;margin-bottom:7px}
+    .footer-note{text-align:center;font-family:system-ui,sans-serif;font-size:.74rem;color:#b8c1cc;padding-top:18px;line-height:1.5}
+    .hidden{display:none!important}
+    @media(max-width:700px){
+      .duo,.check-grid,.cta-grid{grid-template-columns:1fr}
+      .storyboard{grid-template-columns:1fr 1fr}
+      .book:before{display:none}
+      .page{padding:28px 21px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="brand">
+      <img src="https://raw.githubusercontent.com/choosetoownyouradventure/RememberingReport/main/ISABELL_Logo_CtOYA.png" alt="ISABELL Choose to Own Your Adventure logo" onerror="this.style.display='none'">
+      <div class="brand-copy">
+        <div class="brand-name">ISABELL</div>
+        <div class="brand-program">CHOOSE TO OWN YOUR ADVENTURE™</div>
+      </div>
+    </header>
+
+    <section class="book" id="book" aria-live="polite">
+      <div class="page active" data-page="intro">
+        <div class="eyebrow">Remember Your Story</div>
+        <h1>Every adventure begins before the traveler realizes she’s already in one.</h1>
+        <div class="lede">
+          <p>For a moment, imagine your life as a book.</p>
+          <p>Not the polished version you might hand someone else. The real one—the chapters that changed you, the roads you didn’t expect to travel, the people you carried, the dreams you tucked away for later.</p>
+          <p>And somewhere among those pages are clues.</p>
+          <p><strong>This isn’t a test. It’s a tale of the journey you’ve already been living.</strong></p>
+        </div>
+        <h2 style="margin-top:36px">So, traveler… where shall we begin?</h2>
+        <div class="choices duo">
+          <button class="choice" data-entry="gift"><strong>✨ FOLLOW THE GIFT</strong><small>Begin with something about you that has always seemed a little different.</small></button>
+          <button class="choice" data-entry="thread"><strong>🧵 FOLLOW THE THREAD</strong><small>Begin with that feeling that something has been trying to get your attention.</small></button>
+        </div>
+      </div>
+
+      <div class="page" data-page="q1">
+        <div class="eyebrow">Chapter I · The Clue You Almost Forgot</div>
+        <div id="q1Prompt" class="narrative"></div>
+        <div class="choices" id="q1Choices"></div>
+        <button class="back" data-back="intro">← Back</button>
+      </div>
+
+      <div class="page" data-page="clue">
+        <div class="eyebrow">You Found Something</div>
+        <h2>A clue.</h2>
+        <div class="narrative">
+          <p>You look down. There is something small resting in your hand.</p>
+          <p>You don’t know what it means yet. Still, something about it feels strangely familiar.</p>
+          <p>So you slip it carefully into the inside pocket of your jacket—the little pocket that rests close to your heart.</p>
+        </div>
+        <div class="chapter-note">Keep it. Something tells you it may matter later.</div>
+        <div class="actions"><button class="btn" data-next="q2">TURN THE PAGE →</button></div>
+      </div>
+
+      <div class="page" data-page="q2">
+        <div class="eyebrow">Chapter II · The World Gets Bigger</div>
+        <h2>Which role did life seem to hand you most often?</h2>
+        <div class="narrative"><p>Years pass. School. Relationships. Work. Family. Responsibility. Without officially choosing the job, you find yourself becoming a particular character in other people’s stories.</p></div>
+        <div class="choices" id="q2Choices"></div>
+      </div>
+
+      <div class="page" data-page="q3">
+        <div class="eyebrow">Chapter III · A Strange Kind of Homesickness</div>
+        <h2>Where is home?</h2>
+        <div class="narrative"><p>Not your address. The place—or feeling—where some deepest part of you imagines it could finally exhale. Which direction does your heart instinctively look?</p></div>
+        <div class="choices" id="q3Choices"></div>
+      </div>
+
+      <div class="page" data-page="save">
+        <div class="eyebrow">Save Point</div>
+        <h2>Your story is beginning to take shape.</h2>
+        <div class="narrative"><p>Three choices aren’t enough to tell your whole story—but they are already revealing a pattern. Let’s save your place before we turn the page.</p></div>
+        <div class="save-card">
+          <label for="firstName">First name</label>
+          <input id="firstName" type="text" maxlength="80" autocomplete="given-name">
+          <label for="email">Email</label>
+          <input id="email" type="email" maxlength="254" autocomplete="email">
+          <label class="consent">
+            <input id="consent" type="checkbox">
+            <span>Save my place and send my Story Page. I agree that my answers may be stored and used to personalize this Remembering experience and any story I choose to continue. <a href="privacy.html" target="_blank" rel="noopener">Privacy</a>.</span>
+          </label>
+          <div class="error hidden" id="saveError"></div>
+          <div class="status hidden" id="saveStatus"></div>
+          <div class="actions"><button class="btn gold" id="saveStory">SAVE MY STORY & TURN THE PAGE →</button></div>
+        </div>
+      </div>
+
+      <div class="page" data-page="q4">
+        <div class="eyebrow">Chapter IV · The Whisper Gets Louder</div>
+        <h2>Something inside you has been trying to get your attention.</h2>
+        <div class="narrative"><p>At first it was easy to dismiss. A passing thought. A restless feeling. A dream you promised yourself you’d return to someday. But lately, the whisper has become harder to ignore.</p><p>What has it been trying to tell you?</p></div>
+        <div class="choices" id="q4Choices"></div>
+      </div>
+
+      <div class="page" data-page="q5">
+        <div class="eyebrow">Chapter V · Signs Along the Road</div>
+        <h2>Which signs have appeared somewhere in your story?</h2>
+        <div class="narrative"><p>Choose any that genuinely belong to you.</p></div>
+        <div class="check-grid" id="q5Choices"></div>
+        <div class="chapter-note">Not every sign is a message. But patterns are worth noticing.</div>
+        <div class="error hidden" id="q5Error"></div>
+        <div class="actions"><button class="btn" id="saveSigns">TURN THE PAGE →</button></div>
+      </div>
+
+      <div class="page" data-page="q6">
+        <div class="eyebrow">Chapter VI · The Detour</div>
+        <h2>Every worthwhile adventure contains one.</h2>
+        <div class="narrative"><p>The road bends. The map stops making sense. Sometimes we even discover we’ve been walking in circles. Which detour seems to keep appearing in your story?</p></div>
+        <div class="choices" id="q6Choices"></div>
+      </div>
+
+      <div class="page" data-page="q7">
+        <div class="eyebrow">The Threshold · The Page That Hasn’t Been Written Yet</div>
+        <h2>If you could write more of one thing into your next chapter, what would it be?</h2>
+        <div class="choices" id="q7Choices"></div>
+      </div>
+
+      <div class="page" data-page="reveal">
+        <div class="result-wrap">
+          <div class="result-title">
+            <div class="eyebrow">Your Remembering Story</div>
+            <h1 id="resultTitle">Your story is taking shape…</h1>
+          </div>
+          <div id="resultLoading" class="chapter-note">The clues are meeting at the threshold. One moment…</div>
+          <div id="resultContent" class="hidden">
+            <div class="storyboard" id="storyboard"></div>
+            <div class="story-section"><h3>The Clue You Carried</h3><p id="clueText"></p></div>
+            <div class="story-section"><h3>Where Your Compass Points</h3><p id="resonanceText"></p></div>
+            <div class="story-section hidden" id="companionSection"><h3>The Companion Traveling Beside You</h3><p id="companionText"></p></div>
+            <div class="story-section"><h3>The Detour</h3><p id="detourText"></p></div>
+            <div class="story-section"><h3>The Unwritten Page</h3><p id="thresholdText"></p></div>
+            <div class="convergence" id="convergenceText"></div>
+            <div class="mystery">
+              <h3 id="mysteryHeading">There is one mystery your Remembering Story hasn’t solved.</h3>
+              <p id="mysteryText"></p>
+            </div>
+            <div class="cta-grid">
+              <button class="cta" id="continueStory"><strong>CONTINUE MY STORY →</strong><span>Discover the hidden pattern shaping your current chapter.</span></button>
+              <button class="cta" id="talkGuide"><strong>TALK WITH MY STORY GUIDE →</strong><span>Explore where you are in your story and what your next chapter could look like.</span></button>
+            </div>
+            <div class="chapter-note" id="emailStatus">We’ll also send this Story Page to the email you provided.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="progress" id="progress"></div>
+    <div class="footer-note">
+      Remembering is a reflective spiritual coaching experience, not a clinical or scientific assessment. Angelic, Starseed, Earth, and archetypal language are offered as interpretive frameworks for personal reflection.
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    const CONFIG = {
+      API_BASE: "https://remembering-story-api.choosetoownyouradventure.workers.dev",
+      EMAILJS_PUBLIC_KEY: "qC2qvWzXE2hpbuj80",
+      EMAILJS_SERVICE_ID: "service_4lykhrr",
+      EMAILJS_CLIENT_TEMPLATE_ID: "template_remember_client",
+
+      // Replace these when the next experiences are live.
+      CONTINUE_STORY_URL: "",
+      CLARITY_CALL_URL: ""
+    };
+
+    const state = {
+      entry_path: null,
+      q1_childhood_clue: null,
+      q2_life_role: null,
+      q3_belonging: null,
+      q4_whisper: null,
+      q5_signs: [],
+      q6_detour: null,
+      q7_threshold: null,
+      story_id: localStorage.getItem("ctya_story_id") || null,
+      resume_token: localStorage.getItem("ctya_resume_token") || null,
+      first_name: localStorage.getItem("ctya_first_name") || null,
+      email: localStorage.getItem("ctya_email") || null,
+      apiStory: null
+    };
+
+    const pages = ["intro","q1","clue","q2","q3","save","q4","q5","q6","q7","reveal"];
+    const progressSteps = ["q1","q2","q3","q4","q5","q6","q7"];
+
+    const q1 = [
+      ["feeler","You seemed to feel what other people were feeling—even when nobody said anything."],
+      ["observer","You often felt like an observer: interested in the world, but somehow not quite built like everyone else."],
+      ["creator","You were always imagining, drawing, writing, making, inventing, pretending, or turning ordinary things into something new."],
+      ["protector","You noticed unfairness quickly. Something in you wanted to protect, intervene, defend, or make things right."],
+      ["rooted","You felt connected to animals, nature, family, traditions, particular places, or the physical world around you."],
+      ["big_questions","You asked unusually big questions about God, life, death, the universe, or what might exist beyond what you could see."]
+    ];
+    const q2 = [
+      ["helper","THE HELPER","“I’ll take care of it.” Caring, supporting, fixing, tending, carrying."],
+      ["maker","THE MAKER","“There has to be another way.” Imagining, creating, adapting, transforming."],
+      ["protector","THE PROTECTOR","“Someone needs to do something.” Taking charge, defending, organizing, acting."],
+      ["seeker","THE SEEKER","“I need to understand this.” Observing, studying, researching, questioning."],
+      ["messenger","THE MESSENGER","“People need to hear this.” Talking, teaching, storytelling, connecting people and ideas."],
+      ["guide","THE GUIDE","“There has to be meaning in this.” Encouraging, healing, illuminating, helping others see possibility."]
+    ];
+    const q3 = [
+      ["sacred","TOWARD THE SACRED","Toward God, divine love, grace, holiness, or something greater than myself."],
+      ["distant","TOWARD SOMETHING DISTANT","Toward something I can’t quite name—a strange homesickness or sense that I have never completely belonged here."],
+      ["earth","TOWARD THE EARTH","Toward nature, home, land, animals, family, ancestry, tradition, community, or something tangible I can build."],
+      ["my_people","TOWARD MY PEOPLE","Toward people who finally understand how I think, feel, experience, or see the world."],
+      ["still_looking","I’M STILL LOOKING","I’m not sure I’ve ever truly felt that sense of belonging."]
+    ];
+    const q4 = [
+      ["giving","You can’t keep giving everything away and leaving nothing for yourself."],
+      ["create","There is something inside you that wants to be created."],
+      ["ownership","It’s time to stop shrinking and take ownership of your life."],
+      ["understand","There is something about your life you need to understand."],
+      ["share","You have something to say, teach, or share."],
+      ["calling","You are being called toward something meaningful."]
+    ];
+    const q5 = [
+      ["intuition","Strong intuition about people or situations"],
+      ["dreams","Dreams that felt unusually vivid, meaningful, or memorable"],
+      ["synchronicity","Coincidences or synchronicities whose timing seemed almost impossible"],
+      ["empathic_sensitivity","Feeling other people’s emotions unusually strongly"],
+      ["divine_connection","Moments of profound connection through prayer or the Divine"],
+      ["cosmos","Fascination with stars, ancient civilizations, consciousness, or the cosmos"],
+      ["nature","Feeling restored or deeply connected through nature, animals, water, forests, mountains, or land"],
+      ["intuitive_knowing","Occasionally knowing something without knowing how"],
+      ["ancestry","Strong connection to ancestry, family stories, traditions, or places"],
+      ["healing_service","Persistent pull toward healing, teaching, creating, advocacy, spirituality, or service"],
+      ["none","My journey hasn’t really included these things"]
+    ];
+    const q6 = [
+      ["endless_giving","THE ROAD OF ENDLESS GIVING","I take care of everyone else and somehow lose track of myself."],
+      ["thousand_possibilities","THE ROAD OF A THOUSAND POSSIBILITIES","I can see so many things I could create or become that bringing one fully into reality is difficult."],
+      ["resistance","THE ROAD OF RESISTANCE","I know something needs to change, but I keep fighting, forcing, postponing, or waiting for the right moment."],
+      ["endless_thinking","THE ROAD OF ENDLESS THINKING","I research, analyze, question, and reconsider until I’m unsure what I actually want."],
+      ["behind_curtain","THE ROAD BEHIND THE CURTAIN","I have something to express, but judgment, visibility, rejection, or being misunderstood makes me hesitate."],
+      ["somewhere_important","THE ROAD TO SOMEWHERE IMPORTANT","I feel called toward something meaningful, but I’m not entirely sure I can trust the calling—or myself."]
+    ];
+    const q7 = [
+      ["peace","PEACE","Safe, grounded, at home in myself."],
+      ["creation","CREATION","Bring something meaningful into the world."],
+      ["freedom","FREEDOM","Make choices from my own authority."],
+      ["clarity","CLARITY","Understand myself and where I’m going."],
+      ["expression","EXPRESSION","Use my voice and allow myself to be seen."],
+      ["purpose","PURPOSE","Let my life and gifts serve the work I feel called to do."]
+    ];
+
+    function showPage(name){
+      document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.dataset.page === name));
+      updateProgress(name);
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    function updateProgress(page){
+      const host = document.getElementById("progress");
+      host.innerHTML = progressSteps.map(step => {
+        const pi = progressSteps.indexOf(page), si = progressSteps.indexOf(step);
+        return `<span class="dot ${si < pi ? "done" : si === pi ? "current" : ""}"></span>`;
+      }).join("");
+    }
+    function buttons(hostId, rows, onPick){
+      const host = document.getElementById(hostId);
+      host.innerHTML = "";
+      rows.forEach(row => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.innerHTML = row.length === 2 ? row[1] : `<strong>${row[1]}</strong><small>${row[2]}</small>`;
+        b.addEventListener("click", () => onPick(row[0]));
+        host.appendChild(b);
+      });
+    }
+
+    document.querySelectorAll("[data-entry]").forEach(btn => btn.addEventListener("click", () => {
+      state.entry_path = btn.dataset.entry;
+      const gift = `<p>You turn back through the earliest pages of your story. Before careers. Before responsibilities. Before you learned who everyone else expected you to become.</p><p>There you are. And something about that younger version of you catches your attention.</p><h2>What do you notice?</h2>`;
+      const thread = `<p>You notice a thin golden thread disappearing between the pages of your story. You’ve noticed it before—perhaps in the quiet thought: <em>There must be something more than this.</em></p><p>You follow it. It leads backward anyway—to a much younger version of you.</p><h2>What do you recognize in her?</h2>`;
+      document.getElementById("q1Prompt").innerHTML = state.entry_path === "gift" ? gift : thread;
+      showPage("q1");
+    }));
+
+    buttons("q1Choices", q1, value => { state.q1_childhood_clue=value; showPage("clue"); });
+    buttons("q2Choices", q2, value => { state.q2_life_role=value; showPage("q3"); });
+    buttons("q3Choices", q3, value => { state.q3_belonging=value; showPage("save"); });
+    buttons("q4Choices", q4, async value => {
+      state.q4_whisper=value;
+      if(await patchStory({q4_whisper:value})) showPage("q5");
+    });
+    buttons("q6Choices", q6, async value => {
+      state.q6_detour=value;
+      if(await patchStory({q6_detour:value})) showPage("q7");
+    });
+    buttons("q7Choices", q7, async value => {
+      state.q7_threshold=value;
+      if(await patchStory({q7_threshold:value})) {
+        showPage("reveal");
+        await resumeAndRender();
+      }
+    });
+
+    document.querySelectorAll("[data-next]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.next)));
+    document.querySelectorAll("[data-back]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.back)));
+
+    const signsHost=document.getElementById("q5Choices");
+    q5.forEach(([value,label])=>{
+      const lab=document.createElement("label"); lab.className="check";
+      lab.innerHTML=`<input type="checkbox" value="${value}"><span>${label}</span>`;
+      const cb=lab.querySelector("input");
+      cb.addEventListener("change",()=>{
+        if(value==="none" && cb.checked){
+          signsHost.querySelectorAll('input:not([value="none"])').forEach(x=>x.checked=false);
+        } else if(cb.checked){
+          const none=signsHost.querySelector('input[value="none"]'); if(none) none.checked=false;
+        }
+      });
+      signsHost.appendChild(lab);
+    });
+
+    document.getElementById("saveSigns").addEventListener("click", async ()=>{
+      const signs=[...signsHost.querySelectorAll("input:checked")].map(x=>x.value);
+      if(!signs.length){
+        const e=document.getElementById("q5Error"); e.textContent="Choose at least one option, including “My journey hasn’t really included these things” if that fits best."; e.classList.remove("hidden"); return;
+      }
+      document.getElementById("q5Error").classList.add("hidden");
+      state.q5_signs=signs;
+      if(await patchStory({q5_signs:signs})) showPage("q6");
+    });
+
+    document.getElementById("saveStory").addEventListener("click", createStory);
+
+    async function createStory(){
+      const first_name=document.getElementById("firstName").value.trim();
+      const email=document.getElementById("email").value.trim();
+      const consent=document.getElementById("consent").checked;
+      const err=document.getElementById("saveError"), status=document.getElementById("saveStatus");
+      err.classList.add("hidden"); status.classList.add("hidden");
+      if(!first_name || !email || !consent){
+        err.textContent="Please enter your first name and email and check the consent box so we can save your place."; err.classList.remove("hidden"); return;
+      }
+      const btn=document.getElementById("saveStory"); btn.disabled=true; btn.textContent="SAVING YOUR PLACE…";
+      try{
+        const r=await fetch(`${CONFIG.API_BASE}/stories`,{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            first_name,email,
+            entry_path:state.entry_path,
+            q1_childhood_clue:state.q1_childhood_clue,
+            q2_life_role:state.q2_life_role,
+            q3_belonging:state.q3_belonging
+          })
+        });
+        const data=await r.json();
+        if(!r.ok || !data.success) throw new Error(data.error||"Your story could not be saved.");
+        state.story_id=data.story_id; state.resume_token=data.resume_token; state.first_name=first_name; state.email=email;
+        localStorage.setItem("ctya_story_id",state.story_id);
+        localStorage.setItem("ctya_resume_token",state.resume_token);
+        localStorage.setItem("ctya_first_name",first_name);
+        localStorage.setItem("ctya_email",email);
+        status.textContent="Your place is saved."; status.classList.remove("hidden");
+        setTimeout(()=>showPage("q4"),350);
+      }catch(e){
+        err.textContent=e.message; err.classList.remove("hidden");
+      }finally{
+        btn.disabled=false; btn.textContent="SAVE MY STORY & TURN THE PAGE →";
+      }
+    }
+
+    async function patchStory(payload){
+      if(!state.story_id || !state.resume_token){
+        alert("Your saved Story ID is missing. Please return to the Save My Story page.");
+        showPage("save"); return false;
+      }
+      try{
+        const r=await fetch(`${CONFIG.API_BASE}/stories/${encodeURIComponent(state.story_id)}`,{
+          method:"PATCH",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({resume_token:state.resume_token,...payload})
+        });
+        const data=await r.json();
+        if(!r.ok || !data.success) throw new Error(data.error||"We could not save this page.");
+        state.apiStory=data.story;
+        return true;
+      }catch(e){
+        alert(`Your place could not be saved: ${e.message}`);
+        return false;
+      }
+    }
+
+    async function resumeStory(){
+      const r=await fetch(`${CONFIG.API_BASE}/stories/resume`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({story_id:state.story_id,resume_token:state.resume_token})
+      });
+      const data=await r.json();
+      if(!r.ok || !data.success) throw new Error(data.error||"Your story could not be reopened.");
+      state.apiStory=data.story;
+      return data.story;
+    }
+
+    async function resumeAndRender(){
+      try{
+        const story=await resumeStory();
+        renderResult(story);
+        await sendStoryEmail(story);
+      }catch(e){
+        document.getElementById("resultLoading").textContent=`Your result was saved, but this page could not be reloaded: ${e.message}`;
+      }
+    }
+
+    function humanize(s){ return (s||"").replaceAll("_"," ").replace(/\b\w/g,m=>m.toUpperCase()); }
+    function clueSymbol(v){
+      return ({server:"🏆",artisan:"🗝️",warrior:"🧭",scholar:"📖",sage:"🪶",priest:"🏮"})[v] || "✨";
+    }
+    function resonanceSymbol(v){
+      return ({angelic:"✧",starseed:"✦",earth:"🌿"})[v] || "✧";
+    }
+
+    function renderResult(story){
+      const n=story.narrative, r=story.result;
+      if(!n) throw new Error("The narrative package is missing.");
+      document.getElementById("resultLoading").classList.add("hidden");
+      document.getElementById("resultContent").classList.remove("hidden");
+      document.getElementById("resultTitle").textContent=n.story_title || r.story_title || "Your Remembering Story";
+      document.getElementById("clueText").textContent=n.clue?.narrative || "";
+      document.getElementById("resonanceText").textContent=n.resonance?.narrative || "";
+      if(n.companion){
+        document.getElementById("companionSection").classList.remove("hidden");
+        document.getElementById("companionText").textContent=n.companion.narrative || "";
+      }
+      document.getElementById("detourText").textContent=n.detour?.narrative || "";
+      document.getElementById("thresholdText").textContent=n.threshold?.narrative || "";
+      document.getElementById("convergenceText").textContent=n.convergence || "";
+      document.getElementById("mysteryText").textContent=typeof n.mystery==="string" ? n.mystery : (n.mystery?.narrative || n.mystery?.question || "");
+      const board=document.getElementById("storyboard");
+      board.innerHTML=`
+        <div class="panel"><span class="roman">I · THE CLUE</span><div class="symbol">${clueSymbol(r.vocation_primary)}</div><div><strong>${humanize(r.vocation_primary)}</strong><br><small>Something about you has been there from the beginning.</small></div></div>
+        <div class="panel"><span class="roman">II · THE JOURNEY</span><div class="symbol">${resonanceSymbol(r.resonance_primary)}</div><div><strong>${humanize(r.resonance_primary)} resonance</strong><br><small>Life grew bigger, but the clue remained.</small></div></div>
+        <div class="panel"><span class="roman">III · THE DETOUR</span><div class="symbol">↝</div><div><strong>${humanize(r.detour_type)}</strong><br><small>Somewhere along the road, the path became harder to read.</small></div></div>
+        <div class="panel"><span class="roman">IV · THE THRESHOLD</span><div class="symbol">☀</div><div><strong>${humanize(r.threshold_desire)}</strong><br><small>The next page has not been written yet.</small></div></div>`;
+    }
+
+    async function sendStoryEmail(story){
+      const status=document.getElementById("emailStatus");
+      if(!window.emailjs){ status.textContent="Your Story Page is ready here. Email delivery is temporarily unavailable."; return; }
+      try{
+        emailjs.init({publicKey:CONFIG.EMAILJS_PUBLIC_KEY});
+        const n=story.narrative, r=story.result;
+        await emailjs.send(CONFIG.EMAILJS_SERVICE_ID,CONFIG.EMAILJS_CLIENT_TEMPLATE_ID,{
+          to_name: state.first_name || story.first_name,
+          to_email: state.email,
+          story_id: story.story_id,
+          story_title: n?.story_title || r?.story_title || "Your Remembering Story",
+          vocation_primary: humanize(r?.vocation_primary),
+          vocation_secondary: humanize(r?.vocation_secondary),
+          resonance_primary: humanize(r?.resonance_primary),
+          resonance_secondary: humanize(r?.resonance_secondary),
+          detour_type: humanize(r?.detour_type),
+          threshold_desire: humanize(r?.threshold_desire),
+          clue_narrative: n?.clue?.narrative || "",
+          resonance_narrative: n?.resonance?.narrative || "",
+          companion_narrative: n?.companion?.narrative || "",
+          detour_narrative: n?.detour?.narrative || "",
+          threshold_narrative: n?.threshold?.narrative || "",
+          convergence: n?.convergence || "",
+          mystery: typeof n?.mystery==="string" ? n.mystery : (n?.mystery?.narrative || n?.mystery?.question || ""),
+          resume_url: `${location.origin}${location.pathname}?story=${encodeURIComponent(story.story_id)}`
+        });
+        status.textContent="Your Story Page has been sent. Keep your Story ID: "+story.story_id;
+      }catch(e){
+        console.error("EmailJS:",e);
+        status.textContent="Your Story Page is saved here, but the email could not be sent. Your Story ID is "+story.story_id+".";
+      }
+    }
+
+    document.getElementById("continueStory").addEventListener("click",()=>{
+      if(CONFIG.CONTINUE_STORY_URL){
+        location.href=`${CONFIG.CONTINUE_STORY_URL}?story=${encodeURIComponent(state.story_id)}`;
+      }else{
+        alert("Your Story ID is saved. Chapter Two will connect here once the Soul Signature continuation page is published.");
+      }
+    });
+    document.getElementById("talkGuide").addEventListener("click",()=>{
+      if(CONFIG.CLARITY_CALL_URL) window.open(CONFIG.CLARITY_CALL_URL,"_blank","noopener");
+      else alert("Add your clarity-call booking URL in CONFIG.CLARITY_CALL_URL before launch.");
+    });
+
+    // Optional return-in-same-browser behavior.
+    (async function init(){
+      updateProgress("intro");
+      if(state.first_name) document.getElementById("firstName").value=state.first_name;
+      if(state.email) document.getElementById("email").value=state.email;
+      const params=new URLSearchParams(location.search);
+      if(params.get("story") && state.resume_token){
+        state.story_id=params.get("story");
+        try{
+          const story=await resumeStory();
+          if(story.progress?.remembering_status==="complete"){
+            showPage("reveal"); renderResult(story);
+          }
+        }catch(e){ console.warn("Resume skipped:",e); }
+      }
+    })();
+  </script>
+</body>
+</html>
