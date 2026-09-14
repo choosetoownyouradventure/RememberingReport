@@ -307,7 +307,7 @@
 
       // Replace these when the next experiences are live.
       CONTINUE_STORY_URL: "",
-      CLARITY_CALL_URL: ""
+      CLARITY_CALL_URL: "https://calendar.app.google/PW42EZSnd8HV4sUx6"
     };
 
     const state = {
@@ -599,30 +599,78 @@
 
     async function sendStoryEmail(story){
       const status=document.getElementById("emailStatus");
-      if(!window.emailjs){ status.textContent="Your Story Page is ready here. Email delivery is temporarily unavailable."; return; }
+      if(!window.emailjs){
+        status.textContent="Your Story Page is ready here. Email delivery is temporarily unavailable.";
+        return;
+      }
+
+      const recipient =
+        (state.email || "").trim() ||
+        (localStorage.getItem("ctya_email") || "").trim() ||
+        (document.getElementById("email")?.value || "").trim();
+
+      const firstName =
+        (state.first_name || "").trim() ||
+        (story.first_name || "").trim() ||
+        (localStorage.getItem("ctya_first_name") || "").trim();
+
+      if(!recipient){
+        console.error("EmailJS send skipped: recipient email is empty.");
+        status.textContent="Your Story is safely saved on this device, but the email address was not available to the delivery step. Copy your Story ID before leaving this page.";
+        return;
+      }
+
       try{
         emailjs.init({publicKey:CONFIG.EMAILJS_PUBLIC_KEY});
-        const n=story.narrative, r=story.result;
-        await emailjs.send(CONFIG.EMAILJS_SERVICE_ID,CONFIG.EMAILJS_CLIENT_TEMPLATE_ID,{
-          to_name: state.first_name || story.first_name,
-          to_email: state.email,
+
+        const n=story.narrative || {};
+        const r=story.result || {};
+        const temp=document.createElement("div");
+        temp.innerHTML=buildFlowingStory(story);
+        const storyNarrative=(temp.innerText || temp.textContent || "").trim();
+
+        const params={
+          // Recipient / greeting
+          to_email: recipient,
+          email: recipient,
+          to_name: firstName,
+          first_name: firstName,
+
+          // Story reference
           story_id: story.story_id,
-          story_title: n?.story_title || r?.story_title || "Your Remembering Story",
-          vocation_primary: humanize(r?.vocation_primary),
-          vocation_secondary: humanize(r?.vocation_secondary),
-          resonance_primary: humanize(r?.resonance_primary),
-          resonance_secondary: humanize(r?.resonance_secondary),
-          detour_type: humanize(r?.detour_type),
-          threshold_desire: humanize(r?.threshold_desire),
-          clue_narrative: n?.clue?.narrative || "",
-          resonance_narrative: n?.resonance?.narrative || "",
-          companion_narrative: n?.companion?.narrative || "",
-          detour_narrative: n?.detour?.narrative || "",
-          threshold_narrative: n?.threshold?.narrative || "",
-          convergence: n?.convergence || "",
-          mystery: typeof n?.mystery==="string" ? n.mystery : (n?.mystery?.narrative || n?.mystery?.question || ""),
+          story_title: n.story_title || r.story_title || "Your Remembering Story",
+          story_narrative: storyNarrative,
+
+          // V2 result language
+          vocation_primary: humanize(r.vocation_primary),
+          vocation_secondary: humanize(r.vocation_secondary),
+          resonance_primary: humanize(r.resonance_primary),
+          resonance_secondary: humanize(r.resonance_secondary),
+          detour_type: humanize(r.detour_type),
+          threshold_desire: humanize(r.threshold_desire),
+
+          clue_narrative: n.clue?.narrative || "",
+          resonance_narrative: n.resonance?.narrative || "",
+          companion_narrative: n.companion?.narrative || "",
+          detour_narrative: n.detour?.narrative || "",
+          threshold_narrative: n.threshold?.narrative || "",
+          convergence: n.convergence || "",
+          mystery: typeof n.mystery==="string"
+            ? n.mystery
+            : (n.mystery?.narrative || n.mystery?.question || ""),
+
+          booking_url: CONFIG.CLARITY_CALL_URL,
           resume_url: `${location.origin}${location.pathname}?story=${encodeURIComponent(story.story_id)}`
-        });
+        };
+
+        console.log("EmailJS sending to:", recipient, "Story:", story.story_id);
+
+        await emailjs.send(
+          CONFIG.EMAILJS_SERVICE_ID,
+          CONFIG.EMAILJS_CLIENT_TEMPLATE_ID,
+          params
+        );
+
         status.textContent="Your Story Page has been emailed. This browser also keeps your saved place. Story ID "+story.story_id+" is your reference if you ever need support.";
       }catch(e){
         console.error("EmailJS send failed:", e?.status || "", e?.text || e);
