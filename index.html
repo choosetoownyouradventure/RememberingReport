@@ -53,12 +53,7 @@
       min-height:610px;
       overflow:hidden;
     }
-    .book:before{
-      content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;
-      background:linear-gradient(transparent,rgba(117,92,47,.12),transparent);
-      opacity:.7;pointer-events:none;
-    }
-    .page{display:none;padding:clamp(30px,7vw,72px);min-height:610px;animation:turn .34s ease}
+.page{display:none;padding:clamp(30px,7vw,72px);min-height:610px;animation:turn .34s ease}
     .page.active{display:block}
     @keyframes turn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
     .eyebrow{font-size:.72rem;letter-spacing:.19em;text-transform:uppercase;color:#95702d;margin-bottom:16px}
@@ -133,6 +128,10 @@
       margin:26px 0;padding:28px;border-radius:18px;background:var(--navy);color:var(--paper);
       font-size:1.15rem;line-height:1.65;text-align:center
     }
+    .revealed-story{font-size:clamp(1.06rem,2.2vw,1.25rem);line-height:1.9;max-width:760px;margin:18px auto 36px}
+    .revealed-story p{margin:0 0 1.35em}
+    .revealed-story .turn{color:#785b22;font-variant:small-caps;letter-spacing:.06em;font-weight:700}
+    .revealed-story .question{font-size:1.16em;font-style:italic;color:#5f471b}
     .mystery{padding:30px;background:#efe5ca;border-radius:18px}
     .mystery h3{font-size:1.5rem;margin-top:0}
     .cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:25px}
@@ -140,13 +139,15 @@
       border-radius:18px;padding:22px;border:1px solid #b8954d;background:#fffaf0;color:var(--ink)
     }
     .cta strong{display:block;color:#70521d;margin-bottom:7px}
+    .story-id-box{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px;padding:14px 16px;border:1px solid rgba(149,112,45,.24);border-radius:14px;font-family:system-ui,sans-serif;font-size:.82rem;background:rgba(255,255,255,.45)}
+    .story-id-box .btn{padding:9px 14px;font-size:.75rem}
     .footer-note{text-align:center;font-family:system-ui,sans-serif;font-size:.74rem;color:#b8c1cc;padding-top:18px;line-height:1.5}
     .hidden{display:none!important}
     @media(max-width:700px){
       .duo,.check-grid,.cta-grid{grid-template-columns:1fr}
+      .story-id-box{align-items:flex-start;flex-direction:column}
       .storyboard{grid-template-columns:1fr 1fr}
-      .book:before{display:none}
-      .page{padding:28px 21px}
+.page{padding:28px 21px}
     }
   </style>
 </head>
@@ -190,7 +191,7 @@
         <div class="narrative">
           <p>You look down. There is something small resting in your hand.</p>
           <p>You don’t know what it means yet. Still, something about it feels strangely familiar.</p>
-          <p>So you slip it carefully into the inside pocket of your jacket—the little pocket that rests close to your heart.</p>
+          <p>So you slip it carefully into the inside pocket of your jacket.</p>
         </div>
         <div class="chapter-note">Keep it. Something tells you it may matter later.</div>
         <div class="actions"><button class="btn" data-next="q2">TURN THE PAGE →</button></div>
@@ -201,6 +202,7 @@
         <h2>Which role did life seem to hand you most often?</h2>
         <div class="narrative"><p>Years pass. School. Relationships. Work. Family. Responsibility. Without officially choosing the job, you find yourself becoming a particular character in other people’s stories.</p></div>
         <div class="choices" id="q2Choices"></div>
+        <button class="back" data-back="clue">← Back</button>
       </div>
 
       <div class="page" data-page="q3">
@@ -208,6 +210,7 @@
         <h2>Where is home?</h2>
         <div class="narrative"><p>Not your address. The place—or feeling—where some deepest part of you imagines it could finally exhale. Which direction does your heart instinctively look?</p></div>
         <div class="choices" id="q3Choices"></div>
+        <button class="back" data-back="q2">← Back</button>
       </div>
 
       <div class="page" data-page="save">
@@ -226,6 +229,7 @@
           <div class="error hidden" id="saveError"></div>
           <div class="status hidden" id="saveStatus"></div>
           <div class="actions"><button class="btn gold" id="saveStory">SAVE MY STORY & TURN THE PAGE →</button></div>
+          <button class="back" data-back="q3">← Back</button>
         </div>
       </div>
 
@@ -244,6 +248,7 @@
         <div class="chapter-note">Not every sign is a message. But patterns are worth noticing.</div>
         <div class="error hidden" id="q5Error"></div>
         <div class="actions"><button class="btn" id="saveSigns">TURN THE PAGE →</button></div>
+        <button class="back" data-back="q4">← Back</button>
       </div>
 
       <div class="page" data-page="q6">
@@ -251,12 +256,14 @@
         <h2>Every worthwhile adventure contains one.</h2>
         <div class="narrative"><p>The road bends. The map stops making sense. Sometimes we even discover we’ve been walking in circles. Which detour seems to keep appearing in your story?</p></div>
         <div class="choices" id="q6Choices"></div>
+        <button class="back" data-back="q5">← Back</button>
       </div>
 
       <div class="page" data-page="q7">
         <div class="eyebrow">The Threshold · The Page That Hasn’t Been Written Yet</div>
         <h2>If you could write more of one thing into your next chapter, what would it be?</h2>
         <div class="choices" id="q7Choices"></div>
+        <button class="back" data-back="q6">← Back</button>
       </div>
 
       <div class="page" data-page="reveal">
@@ -267,22 +274,18 @@
           </div>
           <div id="resultLoading" class="chapter-note">The clues are meeting at the threshold. One moment…</div>
           <div id="resultContent" class="hidden">
-            <div class="storyboard" id="storyboard"></div>
-            <div class="story-section"><h3>The Clue You Carried</h3><p id="clueText"></p></div>
-            <div class="story-section"><h3>Where Your Compass Points</h3><p id="resonanceText"></p></div>
-            <div class="story-section hidden" id="companionSection"><h3>The Companion Traveling Beside You</h3><p id="companionText"></p></div>
-            <div class="story-section"><h3>The Detour</h3><p id="detourText"></p></div>
-            <div class="story-section"><h3>The Unwritten Page</h3><p id="thresholdText"></p></div>
-            <div class="convergence" id="convergenceText"></div>
+            <article class="revealed-story" id="revealedStory"></article>
             <div class="mystery">
-              <h3 id="mysteryHeading">There is one mystery your Remembering Story hasn’t solved.</h3>
-              <p id="mysteryText"></p>
+              <h3>But the story has left one clue unresolved.</h3>
+              <p>You have found the object, followed the road, noticed the pattern, and reached the threshold. Yet something has been keeping you close enough to see the next chapter without fully stepping into it.</p>
+              <p><strong>What is keeping you from crossing the threshold?</strong></p>
             </div>
             <div class="cta-grid">
-              <button class="cta" id="continueStory"><strong>CONTINUE MY STORY →</strong><span>Discover the hidden pattern shaping your current chapter.</span></button>
-              <button class="cta" id="talkGuide"><strong>TALK WITH MY STORY GUIDE →</strong><span>Explore where you are in your story and what your next chapter could look like.</span></button>
+              <button class="cta" id="continueStory"><strong>FOLLOW THE CLUE → CONTINUE MY STORY</strong><span>Go deeper into the mystery and decipher the pattern that keeps appearing at the edge of your next chapter.</span></button>
+              <button class="cta" id="talkGuide"><strong>SEEK THE GUIDE → TALK WITH MY STORY GUIDE</strong><span>Another clue may be easier to see with a guide beside you. Bring your story and explore what the road is asking of you next.</span></button>
             </div>
-            <div class="chapter-note" id="emailStatus">We’ll also send this Story Page to the email you provided.</div>
+            <div class="chapter-note" id="emailStatus">Your Story Page is saved on this device. We’ll also send a copy to the email you provided.</div>
+            <div class="story-id-box"><span>Story reference: <strong id="storyIdText"></strong></span><button class="btn secondary" id="copyStoryId" type="button">COPY STORY ID</button></div>
           </div>
         </div>
       </div>
@@ -557,28 +560,41 @@
       return ({angelic:"✧",starseed:"✦",earth:"🌿"})[v] || "✧";
     }
 
+    const STORY_COPY = {
+      q1:{feeler:"you often sensed what other people were feeling, even before they said it aloud",observer:"you often felt like an observer—curious about the world, yet somehow not built quite like everyone else",creator:"you were always imagining, drawing, writing, making, inventing, or turning ordinary things into something new",protector:"you noticed unfairness quickly, and something in you wanted to protect, intervene, or make things right",rooted:"you felt a strong connection to animals, nature, family, traditions, places, or the physical world around you",big_questions:"you were already asking unusually large questions about God, life, death, the universe, and what might exist beyond what you could see"},
+      q2:{helper:"the Helper—the one who cared, supported, fixed, tended, and carried",maker:"the Maker—the one who imagined, adapted, created, and found another way",protector:"the Protector—the one who stepped forward when someone needed to do something",seeker:"the Seeker—the one who observed, studied, researched, questioned, and needed to understand",messenger:"the Messenger—the one who talked, taught, told stories, and connected people with ideas",guide:"the Guide—the one who looked for meaning and helped others see possibility"},
+      q3:{sacred:"toward the Sacred—God, divine love, grace, holiness, and something greater than yourself",distant:"toward something distant—a homesickness for something difficult to name",earth:"toward the Earth—nature, home, land, animals, family, ancestry, tradition, community, and the tangible world",my_people:"toward your people—the ones who understand how you think, feel, experience, and see the world",still_looking:"toward a home you are still looking for, because true belonging has not always been easy to name"},
+      q4:{giving:"that you cannot keep giving everything away and leaving nothing for yourself",create:"that something inside you wants to be created",ownership:"that it is time to stop shrinking and take ownership of your life",understand:"that there is something about your life you need to understand",share:"that you have something to say, teach, or share",calling:"that you are being called toward something meaningful"},
+      q5:{intuition:"strong intuition",dreams:"vivid or meaningful dreams",synchronicity:"striking synchronicities",empathic_sensitivity:"a strong sensitivity to other people’s emotions",divine_connection:"moments of connection through prayer or the Divine",cosmos:"a pull toward stars, ancient civilizations, consciousness, or the cosmos",nature:"a deep restoring connection with nature, animals, water, forests, mountains, or land",intuitive_knowing:"moments of knowing without knowing how",ancestry:"a strong connection to ancestry, family stories, traditions, or places",healing_service:"a persistent pull toward healing, teaching, creating, advocacy, spirituality, or service",none:"no particular signs you would name as part of the journey so far"},
+      q6:{endless_giving:"the Road of Endless Giving, where caring for everyone else can make it easy to lose track of yourself",thousand_possibilities:"the Road of a Thousand Possibilities, where seeing so many things you could create or become can make it difficult to bring one fully into reality",resistance:"the Road of Resistance, where knowing something must change does not always make the next step easier",endless_thinking:"the Road of Endless Thinking, where research, analysis, questioning, and reconsidering can blur what you actually want",behind_curtain:"the Road Behind the Curtain, where something wants to be expressed but visibility, judgment, rejection, or misunderstanding makes you hesitate",somewhere_important:"the Road to Somewhere Important, where the call toward meaningful work is present even when trusting it—and yourself—still feels uncertain"},
+      q7:{peace:"peace: to feel safe, grounded, and at home in yourself",creation:"creation: to bring something meaningful into the world",freedom:"freedom: to make choices from your own authority",clarity:"clarity: to understand yourself and where you are going",expression:"expression: to use your voice and allow yourself to be seen",purpose:"purpose: to let your life and gifts serve the work you feel called to do"},
+      object:{server:"a small golden cup",artisan:"an antique key",warrior:"a small compass",scholar:"a tiny book",sage:"a golden quill",priest:"a lantern"}
+    };
+    function answerValue(story,key){ return story?.answers?.[key] ?? state[key] ?? null; }
+    function listWords(items){ if(!items.length)return ""; if(items.length===1)return items[0]; if(items.length===2)return items[0]+" and "+items[1]; return items.slice(0,-1).join(", ")+", and "+items[items.length-1]; }
+    function buildFlowingStory(story){
+      const r=story.result||{}, entry=story.entry_path||state.entry_path;
+      const a1=answerValue(story,"q1_childhood_clue"),a2=answerValue(story,"q2_life_role"),a3=answerValue(story,"q3_belonging"),a4=answerValue(story,"q4_whisper"),a5=answerValue(story,"q5_signs")||[],a6=answerValue(story,"q6_detour"),a7=answerValue(story,"q7_threshold");
+      const signs=(Array.isArray(a5)?a5:[]).map(x=>STORY_COPY.q5[x]).filter(Boolean);
+      const object=STORY_COPY.object[r.vocation_primary]||"small shining object";
+      const secondary=r.vocation_secondary?` with a quieter current of ${humanize(r.vocation_secondary)}`:"";
+      const resonance=r.resonance_primary?`${humanize(r.resonance_primary)} resonance`:"a particular sense of belonging";
+      const opening=entry==="thread"?`You chose to follow the thread—the quiet feeling that something had been trying to get your attention. It led you backward anyway, to a younger version of yourself. There, you remembered that ${STORY_COPY.q1[a1]||"something about you had been present from the beginning"}.`:`You chose to follow the gift and turned back through the earliest pages of your story. There, you remembered that ${STORY_COPY.q1[a1]||"something about you had been present from the beginning"}.`;
+      const p2=`In that memory, something glinted along the path. You bent down, picked it up, and slipped it into the inside pocket of your jacket without yet knowing why it mattered. Years passed. The world grew bigger, and life kept casting you as ${STORY_COPY.q2[a2]||"a familiar character in other people’s stories"}.`;
+      const p3=`Then the road became quiet enough for a different question: <em>Where is home?</em> Your inner compass turned ${STORY_COPY.q3[a3]||"toward a place of belonging you are still learning to recognize"}. By then the object in your pocket had traveled through every version of you. Only now does its shape begin to make sense: <strong>${object}</strong>. In the language of this story, it points toward the ${humanize(r.vocation_primary)||"gift"}${secondary} that has been threading through your choices all along.`;
+      const signLine=signs.length?`Along the way, you also recognized ${listWords(signs)}.`:"";
+      const p4=`As the whisper grew louder, it seemed to be telling you ${STORY_COPY.q4[a4]||"that something in your life wants your attention"}. ${signLine} None of these clues has to dictate what your life means. Together, though, they show the pattern of a traveler who tends to orient toward ${resonance.toLowerCase()}—a way of naming where your story seems to feel most alive, familiar, or meaningful.`;
+      const p5=`<span class="turn">Then came the detour.</span> You recognized ${STORY_COPY.q6[a6]||"a road that has been difficult to leave behind"}. Perhaps that road once protected something important. Perhaps it simply became familiar. Either way, it has shaped the distance between the life you have been living and the threshold now appearing ahead of you.`;
+      const p6=`<span class="turn">And now, the unwritten page.</span> When you imagined what you most wanted to write into the next chapter, you chose ${STORY_COPY.q7[a7]||"something that matters deeply to you"}. The page is blank enough to ask a larger question: <span class="question">What is worthy of this life I have been given?</span> Not merely what you <em>could</em> do based on a definition of who you are, and not a prediction of what you <em>must</em> become. Your story has revealed a way of noticing the patterns your journey has created so far. Now, you get to decide where you want to take the story next.`;
+      const p7=`You cannot choose every chapter that brought you here. But you can choose what you own from here. The object is still in your pocket. The road is still open. And somewhere just beyond the threshold is the next clue.`;
+      return [opening,p2,p3,p4,p5,p6,p7].map(p=>`<p>${p}</p>`).join("");
+    }
     function renderResult(story){
-      const n=story.narrative, r=story.result;
-      if(!n) throw new Error("The narrative package is missing.");
-      document.getElementById("resultLoading").classList.add("hidden");
-      document.getElementById("resultContent").classList.remove("hidden");
-      document.getElementById("resultTitle").textContent=n.story_title || r.story_title || "Your Remembering Story";
-      document.getElementById("clueText").textContent=n.clue?.narrative || "";
-      document.getElementById("resonanceText").textContent=n.resonance?.narrative || "";
-      if(n.companion){
-        document.getElementById("companionSection").classList.remove("hidden");
-        document.getElementById("companionText").textContent=n.companion.narrative || "";
-      }
-      document.getElementById("detourText").textContent=n.detour?.narrative || "";
-      document.getElementById("thresholdText").textContent=n.threshold?.narrative || "";
-      document.getElementById("convergenceText").textContent=n.convergence || "";
-      document.getElementById("mysteryText").textContent=typeof n.mystery==="string" ? n.mystery : (n.mystery?.narrative || n.mystery?.question || "");
-      const board=document.getElementById("storyboard");
-      board.innerHTML=`
-        <div class="panel"><span class="roman">I · THE CLUE</span><div class="symbol">${clueSymbol(r.vocation_primary)}</div><div><strong>${humanize(r.vocation_primary)}</strong><br><small>Something about you has been there from the beginning.</small></div></div>
-        <div class="panel"><span class="roman">II · THE JOURNEY</span><div class="symbol">${resonanceSymbol(r.resonance_primary)}</div><div><strong>${humanize(r.resonance_primary)} resonance</strong><br><small>Life grew bigger, but the clue remained.</small></div></div>
-        <div class="panel"><span class="roman">III · THE DETOUR</span><div class="symbol">↝</div><div><strong>${humanize(r.detour_type)}</strong><br><small>Somewhere along the road, the path became harder to read.</small></div></div>
-        <div class="panel"><span class="roman">IV · THE THRESHOLD</span><div class="symbol">☀</div><div><strong>${humanize(r.threshold_desire)}</strong><br><small>The next page has not been written yet.</small></div></div>`;
+      const n=story.narrative,r=story.result;if(!n)throw new Error("The narrative package is missing.");
+      document.getElementById("resultLoading").classList.add("hidden");document.getElementById("resultContent").classList.remove("hidden");
+      document.getElementById("resultTitle").textContent=n.story_title||r.story_title||"Your Remembering Story";
+      document.getElementById("revealedStory").innerHTML=buildFlowingStory(story);
+      document.getElementById("storyIdText").textContent=story.story_id||state.story_id||"";
     }
 
     async function sendStoryEmail(story){
@@ -607,23 +623,29 @@
           mystery: typeof n?.mystery==="string" ? n.mystery : (n?.mystery?.narrative || n?.mystery?.question || ""),
           resume_url: `${location.origin}${location.pathname}?story=${encodeURIComponent(story.story_id)}`
         });
-        status.textContent="Your Story Page has been sent. Keep your Story ID: "+story.story_id;
+        status.textContent="Your Story Page has been emailed. This browser also keeps your saved place. Story ID "+story.story_id+" is your reference if you ever need support.";
       }catch(e){
-        console.error("EmailJS:",e);
-        status.textContent="Your Story Page is saved here, but the email could not be sent. Your Story ID is "+story.story_id+".";
+        console.error("EmailJS send failed:", e?.status || "", e?.text || e);
+        status.textContent="Your Story is safely saved on this device, but the email could not be sent. Copy Story ID "+story.story_id+" as a support reference before you leave this page.";
       }
     }
+
+    document.getElementById("copyStoryId").addEventListener("click", async ()=>{
+      const id=state.story_id || document.getElementById("storyIdText").textContent;
+      try{await navigator.clipboard.writeText(id);document.getElementById("copyStoryId").textContent="COPIED";setTimeout(()=>document.getElementById("copyStoryId").textContent="COPY STORY ID",1200);}
+      catch(e){prompt("Copy your Story ID:",id);}
+    });
 
     document.getElementById("continueStory").addEventListener("click",()=>{
       if(CONFIG.CONTINUE_STORY_URL){
         location.href=`${CONFIG.CONTINUE_STORY_URL}?story=${encodeURIComponent(state.story_id)}`;
       }else{
-        alert("Your Story ID is saved. Chapter Two will connect here once the Soul Signature continuation page is published.");
+        alert("The next clue is being prepared. Your saved Story will carry forward into Chapter Two as soon as the deeper Soul Signature path is published.");
       }
     });
     document.getElementById("talkGuide").addEventListener("click",()=>{
       if(CONFIG.CLARITY_CALL_URL) window.open(CONFIG.CLARITY_CALL_URL,"_blank","noopener");
-      else alert("Add your clarity-call booking URL in CONFIG.CLARITY_CALL_URL before launch.");
+      else alert("The Story Guide booking page is being connected. Once the Google Calendar appointment link is added, this button will open the live schedule.");
     });
 
     // Optional return-in-same-browser behavior.
