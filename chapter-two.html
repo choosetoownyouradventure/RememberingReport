@@ -435,11 +435,7 @@ function candidate(){
 }
 function responseItems(){
   const c=candidate();
-
-  // If Chapter One does not resolve cleanly to one candidate Veil,
-  // do not leave the traveler with an empty question. Use broad,
-  // experiential responses and let Chapter Two gather the evidence.
-  const genericResponses = [
+  const fallback=[
     "I think, research, rehearse, or wait before acting.",
     "I push harder, take over, or try to control what happens next.",
     "I put other people, responsibilities, or expectations ahead of what I need.",
@@ -447,35 +443,55 @@ function responseItems(){
     "I keep revisiting the choice because I am afraid of getting it wrong.",
     "I reach for something familiar that gives me relief in the moment."
   ];
-
-  const source = c ? c.responses : genericResponses;
-  const arr = source.map((x,i)=>[`v${i}`,x]);
-  arr.push(["not_me","None of these quite fits — keep this exploratory."]);
-  return arr;
+  const source=Array.isArray(c?.responses)&&c.responses.length?c.responses:fallback;
+  return [...source.map((x,i)=>[`v${i}`,x]),["not_me","None of these quite fits — keep this exploratory."]];
 }
 function meaningItems(){
   const c=candidate();
-  const arr=(c?c.meanings:[]).map((x,i)=>[`m${i}`,x]);
-  arr.push(["other","None of these — I want to write what it means to me."]);
-  return arr;
+  const fallback=[
+    "I may not be safe, ready, or allowed to act yet.",
+    "I could disappoint someone, make the wrong choice, or lose something important.",
+    "I need to understand, control, or prepare for more before I move.",
+    "My needs, voice, or priority may have to wait.",
+    "Being fully seen or choosing for myself could have a cost."
+  ];
+  const source=Array.isArray(c?.meanings)&&c.meanings.length?c.meanings:fallback;
+  return [...source.map((x,i)=>[`m${i}`,x]),["other","None of these — I want to write what it means to me."]];
 }
 function spellItems(){
   const c=candidate();
-  const arr=(c?c.spells:[]).map((x,i)=>[`s${i}`,x]);
-  arr.push(["other","None of these — I want to name my own sentence."]);
-  return arr;
+  const fallback=[
+    "I need more certainty before I can move.",
+    "I have to keep things under control.",
+    "Other people's needs or reactions have to come first.",
+    "It is safer to wait, hide, or prepare more.",
+    "If I choose wrong, something important could be lost."
+  ];
+  const source=Array.isArray(c?.spells)&&c.spells.length?c.spells:fallback;
+  return [...source.map((x,i)=>[`s${i}`,x]),["other","None of these — I want to name my own sentence."]];
 }
 function rewriteItems(){
   const c=candidate();
-  const arr=(c?c.rewrites:[]).map((x,i)=>[`r${i}`,x]);
-  arr.push(["other","I want to write a more accurate sentence in my own words."]);
-  return arr;
+  const fallback=[
+    "I can make a small, reversible choice without having perfect certainty.",
+    "I can care about other people without abandoning my own needs or authority.",
+    "I can pause and choose my response instead of automatically following the familiar rule.",
+    "I can let new evidence matter more than an old prediction.",
+    "I can take one honest step without needing to solve the whole road."
+  ];
+  const source=Array.isArray(c?.rewrites)&&c.rewrites.length?c.rewrites:fallback;
+  return [...source.map((x,i)=>[`r${i}`,x]),["other","I want to write a more accurate sentence in my own words."]];
 }
 function experimentItems(){
   const c=candidate();
-  const arr=(c?c.experiments:[]).map((x,i)=>[`e${i}`,x]);
-  arr.push(["custom","I want to design my own small, safe seven-day experiment."]);
-  return arr;
+  const fallback=[
+    "For seven days, notice the pattern and create one deliberate pause before the familiar response.",
+    "Take one small, reversible action that the old sentence would normally postpone.",
+    "Record what the old spell predicts, what you choose instead, and what actually happens.",
+    "Protect one small block of time for the choice that matters to you before responding to a nonurgent demand."
+  ];
+  const source=Array.isArray(c?.experiments)&&c.experiments.length?c.experiments:fallback;
+  return [...source.map((x,i)=>[`e${i}`,x]),["custom","I want to design my own small, safe seven-day experiment."]];
 }
 function selectedText(list, code, custom){
   if(code==="other"||code==="custom") return (custom||"").trim();
