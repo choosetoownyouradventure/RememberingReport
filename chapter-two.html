@@ -210,15 +210,35 @@ textarea{min-height:110px;resize:vertical}
     <section class="page" id="result">
       <div class="chapter">Chapter Two Complete</div>
       <span class="pill">DECIPHER THE PATTERN</span>
-      <h2 id="resultTitle">You found the sentence beneath the detour.</h2>
-      <div class="callout"><b>Your old spell</b><br><span id="oldSpell"></span></div>
-      <div class="callout"><b>Your emerging truth</b><br><span id="newTruth"></span></div>
-      <h3>Your choice point</h3><p id="choicePoint"></p>
-      <h3>Your seven-day experiment</h3><p id="sevenDay"></p>
-      <h3>What to notice</h3><p id="measure"></p>
+      <h2 id="resultTitle">The detour has a story. Now you can see its shape.</h2>
+
+      <p id="narrativeOpening"></p>
+      <p id="narrativePattern"></p>
+
+      <div class="callout">
+        <b>The sentence you found beneath the pattern</b><br>
+        <span id="oldSpell"></span>
+      </div>
+
+      <p id="narrativeChoice"></p>
+
+      <div class="callout">
+        <b>The truth you are willing to practice</b><br>
+        <span id="newTruth"></span>
+      </div>
+
+      <h3>The door you found</h3><p id="choicePoint"></p>
+      <p id="narrativeDoor"></p>
+
+      <h3>Your seven-day field note</h3><p id="sevenDay"></p>
+      <p id="measure"></p>
+
       <div class="divider"></div>
-      <p><b>This is the clue Chapter Two adds to your larger Remembering Story:</b></p>
+      <div class="chapter">At the edge of the next chapter</div>
+      <h3 id="cliffhangerTitle">Finding the spell is not the same as being free of it.</h3>
       <p id="closing"></p>
+      <p id="cliffhanger"></p>
+
       <div id="saveStatus" class="status"></div>
       <div class="btnrow">
         <button class="btn ghost" onclick="window.print()">PRINT / SAVE THIS CHAPTER</button>
@@ -604,7 +624,7 @@ function currentRewrite(){return selectedText(rewriteItems(),state.rewrite,$("re
 $("finish").addEventListener("click",async()=>{
   const c=candidate();
   const payload={
-    version:"chapter2-v4",
+    version:"chapter2-v5",
     completed_at:new Date().toISOString(),
     candidate_veil:state.candidateVeil,
     client_pattern:c?.client||null,
@@ -625,14 +645,23 @@ $("finish").addEventListener("click",async()=>{
   const key=`ctya_chapter2_${state.story_id||"local"}`;
   localStorage.setItem(key,JSON.stringify(payload));
 
+  const first=state.story?.first_name||localStorage.getItem("ctya_first_name")||"Traveler";
+  const patternName=payload.client_pattern||"familiar pattern";
+  const patternLead=payload.client_pattern
+    ? `Your answers traced a path that resembles the ${patternName}. That is not a label for who you are. It is a name for one route you may take when this kind of moment appears.`
+    : `Your answers traced a repeatable route through the detour. No single pattern needs to define it for the map to be useful.`;
+
+  $("narrativeOpening").textContent=`${first}, you began this chapter by following the moment just before the detour. You noticed what tends to happen, what you do next, and what that response may be trying to protect.`;
+  $("narrativePattern").textContent=patternLead + ` In this version of the story, “${payload.protective_promise}” is part of the promise underneath the response. The response can bring ${payload.immediate_reward.toLowerCase()} — while the longer road can lead to ${payload.later_cost.toLowerCase()}`;
   $("oldSpell").textContent=`“${payload.old_spell}”`;
+  $("narrativeChoice").textContent=`That sentence may have sounded like a fact because it has traveled the road with you more than once. Chapter Two did not ask you to prove it wrong. It asked you to notice where the sentence enters the story — and whether you still want it making the next choice for you.`;
   $("newTruth").textContent=`“${payload.emerging_truth}”`;
   $("choicePoint").textContent=payload.choice_point;
+  $("narrativeDoor").textContent=`This is the earliest place you identified where choice can return. You do not have to change the whole pattern at once. You only need enough room to make one different move and see what reality teaches you.`;
   $("sevenDay").textContent=payload.seven_day_experiment;
-  $("measure").textContent=payload.measure + " Evidence to collect: " + payload.behavioral_measure + " " + payload.evidence_question;
-  $("closing").textContent=c
-    ? `A ${c.client} may be part of the detour you are learning to recognize. The goal is not to eliminate a part of yourself; it is to understand what the pattern has been trying to accomplish and practice a more flexible response.`
-    : `You identified a trigger, a hidden promise, the sentence beneath it, and a realistic place where choice can return. That pattern map can now travel with the rest of your Remembering Story.`;
+  $("measure").textContent=`As you try it, notice: ${payload.measure} Evidence to collect: ${payload.behavioral_measure} Keep this question with you: ${payload.evidence_question}`;
+  $("closing").textContent=`You have done something important in this chapter: you turned a vague detour into a map. You can now see the moment, the meaning, the protective promise, the familiar response, the cost — and the place where another choice can enter.`;
+  $("cliffhanger").textContent=`But an old sentence can survive even after you recognize it. In Chapter Three, we will follow the words themselves: where the rule gets its authority, what keeps reinforcing it, and how to rewrite it without replacing one rigid story with another. The next question is no longer “What is the pattern?” It is: “Whose story gets to write what happens next?”`;
   $("saveStatus").textContent="Chapter Two is saved in this browser.";
   show("result");
 
@@ -642,7 +671,7 @@ $("finish").addEventListener("click",async()=>{
         method:"PUT",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
           resume_token:state.resume_token,
-          version:"chapter2-v4",
+          version:"chapter2-v5",
           status:"complete",
           answers:{
             trigger:payload.trigger,
