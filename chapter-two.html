@@ -240,7 +240,7 @@ textarea{min-height:110px;resize:vertical}
 <script>
 const CONFIG={
   API_BASE:"https://remembering-story-api.choosetoownyouradventure.workers.dev",
-  // Chapter Two always saves in this browser. Set true after the Worker accepts a `chapter_two` object.
+  // Chapter Two saves locally and syncs through the dedicated chapter endpoint.
   TRY_SERVER_SYNC:true
 };
 
@@ -582,18 +582,39 @@ $("finish").addEventListener("click",async()=>{
 
   if(CONFIG.TRY_SERVER_SYNC && state.story_id && state.resume_token){
     try{
-      const r=await fetch(`${CONFIG.API_BASE}/stories/${encodeURIComponent(state.story_id)}`,{
-        method:"PATCH",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({resume_token:state.resume_token,chapter_two:payload})
+      const r=await fetch(`${CONFIG.API_BASE}/stories/${encodeURIComponent(state.story_id)}/chapters/decipher_pattern`,{
+        method:"PUT",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          resume_token:state.resume_token,
+          version:"chapter2-v1",
+          status:"complete",
+          answers:{
+            trigger:payload.trigger,
+            response:payload.response,
+            protective_promise:payload.protective_promise,
+            meaning:payload.meaning,
+            old_spell:payload.old_spell,
+            immediate_reward:payload.immediate_reward,
+            later_cost:payload.later_cost,
+            choice_point:payload.choice_point
+          },
+          result:{
+            candidate_veil:payload.candidate_veil,
+            client_pattern:payload.client_pattern,
+            emerging_truth:payload.emerging_truth,
+            seven_day_experiment:payload.seven_day_experiment,
+            measure:payload.measure
+          }
+        })
       });
       const data=await r.json().catch(()=>({}));
       if(r.ok && data.success){
         $("saveStatus").textContent="Chapter Two is saved to your Remembering Story.";
       }else{
-        $("saveStatus").textContent="Chapter Two is saved in this browser. The current Story API has not yet accepted the Chapter Two data package.";
+        $("saveStatus").textContent="Chapter Two is saved in this browser, but the Story API did not accept the chapter sync.";
       }
     }catch(e){
-      $("saveStatus").textContent="Chapter Two is saved in this browser. Server sync will activate after the Chapter Two API upgrade.";
+      $("saveStatus").textContent="Chapter Two is saved in this browser, but the server sync could not be reached.";
     }
   }
 });
