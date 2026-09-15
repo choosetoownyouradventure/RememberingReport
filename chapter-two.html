@@ -406,7 +406,7 @@ function inferVeil(){
     rules:"hierophant",approval:"hierophant",hierophant:"hierophant",
     collapse:"tower",disruption:"tower",tower:"tower",
     visibility:"sun",hiding:"sun",sun:"sun",
-    overgiving:"empress",care:"empress",empress:"empress",
+    overgiving:"empress",endless_giving:"empress",endlessgiving:"empress",giving:"empress",care:"empress",empress:"empress",
     control:"emperor",responsibility:"emperor",emperor:"emperor",
     attachment:"devil",relief:"devil",devil:"devil",
     waiting:"hanged",delay:"hanged",hanged:"hanged",
@@ -580,7 +580,7 @@ function currentRewrite(){return selectedText(rewriteItems(),state.rewrite,$("re
 $("finish").addEventListener("click",async()=>{
   const c=candidate();
   const payload={
-    version:"chapter2-v1",
+    version:"chapter2-v2",
     completed_at:new Date().toISOString(),
     candidate_veil:state.candidateVeil,
     client_pattern:c?.client||null,
@@ -616,7 +616,7 @@ $("finish").addEventListener("click",async()=>{
         method:"PUT",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
           resume_token:state.resume_token,
-          version:"chapter2-v1",
+          version:"chapter2-v2",
           status:"complete",
           answers:{
             trigger:payload.trigger,
@@ -626,7 +626,10 @@ $("finish").addEventListener("click",async()=>{
             old_spell:payload.old_spell,
             immediate_reward:payload.immediate_reward,
             later_cost:payload.later_cost,
-            choice_point:payload.choice_point
+            choice_point:payload.choice_point,
+            emerging_truth:payload.emerging_truth,
+            seven_day_experiment:payload.seven_day_experiment,
+            measure:payload.measure
           },
           result:{
             candidate_veil:payload.candidate_veil,
