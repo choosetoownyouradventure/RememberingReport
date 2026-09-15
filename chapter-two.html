@@ -435,7 +435,21 @@ function candidate(){
 }
 function responseItems(){
   const c=candidate();
-  const arr=(c?c.responses:[]).map((x,i)=>[`v${i}`,x]);
+
+  // If Chapter One does not resolve cleanly to one candidate Veil,
+  // do not leave the traveler with an empty question. Use broad,
+  // experiential responses and let Chapter Two gather the evidence.
+  const genericResponses = [
+    "I think, research, rehearse, or wait before acting.",
+    "I push harder, take over, or try to control what happens next.",
+    "I put other people, responsibilities, or expectations ahead of what I need.",
+    "I pull back, hide, second-guess myself, or avoid being fully seen.",
+    "I keep revisiting the choice because I am afraid of getting it wrong.",
+    "I reach for something familiar that gives me relief in the moment."
+  ];
+
+  const source = c ? c.responses : genericResponses;
+  const arr = source.map((x,i)=>[`v${i}`,x]);
   arr.push(["not_me","None of these quite fits — keep this exploratory."]);
   return arr;
 }
