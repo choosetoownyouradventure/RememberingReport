@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chapter Two — Decipher the Pattern | Choose to Own Your Adventure™</title>
+<meta name="description" content="Continue your Remembering Story by deciphering the pattern beneath the detour.">
+<style>
+:root{
+  --navy:#08172a;--navy2:#10243e;--ink:#162133;--gold:#b99143;--gold2:#d8bd79;
+  --cream:#fbf7ef;--paper:#fffdf8;--muted:#6d6b68;--line:#e8dcc3;--danger:#8b2f2f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:Georgia,"Times New Roman",serif;color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 0%,rgba(216,189,121,.15),transparent 25rem),
+    linear-gradient(180deg,var(--navy) 0 13rem,var(--cream) 13rem 100%);
+}
+button,input,textarea{font:inherit}
+.wrap{max-width:880px;margin:auto;padding:34px 18px 70px}
+.brand{text-align:center;color:#fff;margin-bottom:28px}
+.eyebrow{letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--gold2)}
+.brand h1{margin:.5rem 0 .35rem;font-size:clamp(2rem,6vw,3.5rem);font-weight:500}
+.brand p{margin:.2rem auto;max-width:680px;color:#dce4ec;line-height:1.55}
+.book{
+  background:var(--paper);border:1px solid rgba(185,145,67,.38);
+  box-shadow:0 22px 60px rgba(0,0,0,.18);border-radius:14px;overflow:hidden
+}
+.page{display:none;padding:clamp(26px,6vw,58px)}
+.page.active{display:block}
+.chapter{font-size:.75rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;font-weight:bold}
+h2{font-size:clamp(1.8rem,4.8vw,2.65rem);font-weight:500;margin:.4rem 0 1rem}
+h3{font-size:1.25rem;margin:1.6rem 0 .65rem}
+p{line-height:1.68}
+.lede{font-size:1.08rem}
+.note{color:var(--muted);font-size:.92rem}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--gold2),transparent);margin:28px 0}
+.choices{display:grid;gap:12px;margin:22px 0}
+.choice{
+  width:100%;text-align:left;padding:16px 18px;border-radius:10px;border:1px solid var(--line);
+  background:#fff;cursor:pointer;line-height:1.45;transition:.15s
+}
+.choice:hover,.choice:focus{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 5px 18px rgba(0,0,0,.06)}
+.choice.selected{border:2px solid var(--gold);background:#fffaf0}
+.choice small{display:block;color:var(--muted);margin-top:5px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.btn{
+  border:0;border-radius:9px;padding:13px 18px;cursor:pointer;font-weight:bold;
+  letter-spacing:.035em
+}
+.primary{background:var(--navy);color:white}
+.gold{background:var(--gold);color:#101820}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.progressWrap{padding:0 28px 18px;background:var(--paper)}
+.progressLine{height:5px;border-radius:5px;background:#eee6d6;overflow:hidden}
+.progressBar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:.25s}
+.progressText{font-size:.78rem;color:var(--muted);text-align:center;margin-top:8px}
+.callout{
+  margin:22px 0;padding:18px 20px;border-left:4px solid var(--gold);
+  background:#faf4e7;border-radius:0 8px 8px 0
+}
+.spell{
+  padding:25px;margin:22px 0;border:1px solid var(--gold2);background:#fff9e9;text-align:center;
+  font-size:1.18rem;line-height:1.6
+}
+.map{display:grid;gap:10px;margin:20px 0}
+.maprow{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:12px 0;border-bottom:1px solid #eee4d0}
+.maprow b{color:#735719}
+textarea,input[type=text]{width:100%;padding:13px 14px;border:1px solid #d8cdb9;border-radius:8px;background:#fff}
+textarea{min-height:110px;resize:vertical}
+.hidden{display:none!important}
+.status{padding:12px 14px;border-radius:8px;background:#f3f5f7;margin:12px 0;font-size:.9rem}
+.error{color:var(--danger)}
+.footer{text-align:center;color:#7f7a70;font-size:.8rem;max-width:720px;margin:25px auto;line-height:1.55}
+.pill{display:inline-block;border:1px solid var(--gold2);border-radius:30px;padding:5px 10px;color:#72591c;font-size:.78rem;margin-bottom:8px}
+@media(max-width:620px){
+  .maprow{grid-template-columns:1fr;gap:4px}
+  .page{padding:26px 20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand">
+    <div class="eyebrow">Choose to Own Your Adventure™ · Remembering</div>
+    <h1>Chapter Two</h1>
+    <p><strong>Decipher the Pattern</strong><br>Follow the detour far enough to find the choice hidden inside it.</p>
+  </header>
+
+  <main class="book">
+    <section class="page active" id="loading">
+      <div class="chapter">Opening your saved story</div>
+      <h2>The next page remembers where you left off.</h2>
+      <p id="loadingText">Looking for your Story ID and reopening Chapter One…</p>
+      <div id="loadError" class="status error hidden"></div>
+    </section>
+
+    <section class="page" id="intro">
+      <div class="chapter">Chapter Two · Decipher the Pattern</div>
+      <h2>Every adventure has a road the traveler seems to meet more than once.</h2>
+      <p class="lede">In Chapter One, you followed clues about the gift you carry, the direction your inner compass points, the detour you recognize, and the unwritten page ahead.</p>
+      <div class="callout" id="storyBridge"></div>
+      <p>This chapter does not ask, “What is wrong with me?” It asks something more useful:</p>
+      <div class="spell"><em>If this pattern has a logic, what is it trying to accomplish — and where can choice re-enter the story?</em></div>
+      <p class="note">This is a reflective coaching experience, not a psychological or medical diagnosis.</p>
+      <div class="btnrow"><button class="btn gold" data-next="trigger">FOLLOW THE THREAD →</button></div>
+    </section>
+
+    <section class="page" id="trigger">
+      <div class="chapter">I · The Moment Before</div>
+      <h2>Think of the change you most want to make right now.</h2>
+      <p>What most often happens just before you get pulled off course?</p>
+      <div class="choices" id="triggerChoices"></div>
+      <div id="triggerOtherWrap" class="hidden">
+        <label for="triggerOther"><b>Put the moment in your own words.</b></label>
+        <textarea id="triggerOther" placeholder="Usually, right before I lose momentum…"></textarea>
+      </div>
+      <div class="btnrow"><button class="btn ghost" data-back="intro">← BACK</button><button class="btn primary" id="triggerNext" disabled>TURN THE PAGE →</button></div>
+    </section>
+
+    <section class="page" id="response">
+      <div class="chapter">II · The Familiar Move</div>
+      <h2>When that happens, what do you most naturally do?</h2>
+      <p>You can reject the suggestions. The point is recognition, not fitting yourself into a label.</p>
+      <div class="choices" id="responseChoices"></div>
+      <div class="btnrow"><button class="btn ghost" data-back="trigger">← BACK</button><button class="btn primary" id="responseNext" disabled>KEEP FOLLOWING →</button></div>
+    </section>
+
+    <section class="page" id="promise">
+      <div class="chapter">III · The Hidden Promise</div>
+      <h2>If the pattern could speak, what would it say it is trying to do for you?</h2>
+      <p>Patterns often persist because they offer an immediate reward: relief, belonging, certainty, control, protection, invisibility, usefulness, or time.</p>
+      <div class="choices" id="promiseChoices"></div>
+      <div class="btnrow"><button class="btn ghost" data-back="response">← BACK</button><button class="btn primary" id="promiseNext" disabled>SEE WHAT IT'S PROTECTING →</button></div>
+    </section>
+
+    <section class="page" id="meaning">
+      <div class="chapter">IV · The Meaning You Make</div>
+      <h2>What does the moment seem to mean about you, the situation, or what could happen next?</h2>
+      <div class="choices" id="meaningChoices"></div>
+      <div id="meaningOtherWrap" class="hidden">
+        <label for="meaningOther"><b>Write the meaning in your own words.</b></label>
+        <textarea id="meaningOther" placeholder="In that moment, part of me assumes…"></textarea>
+      </div>
+      <div class="btnrow"><button class="btn ghost" data-back="promise">← BACK</button><button class="btn primary" id="meaningNext" disabled>FIND THE SENTENCE →</button></div>
+    </section>
+
+    <section class="page" id="spell">
+      <div class="chapter">V · The Spell Beneath the Pattern</div>
+      <h2>Sometimes the behavior is not what keeps the loop alive.</h2>
+      <p>It is the sentence underneath it — the rule, prediction, assumption, or story that starts sounding like fact because it has been repeated so often.</p>
+      <div class="choices" id="spellChoices"></div>
+      <div id="spellOtherWrap" class="hidden">
+        <label for="spellOther"><b>Name your own sentence.</b></label>
+        <textarea id="spellOther" placeholder="The sentence underneath this pattern sounds like…"></textarea>
+      </div>
+      <div class="btnrow"><button class="btn ghost" data-back="meaning">← BACK</button><button class="btn primary" id="spellNext" disabled>MAP THE PATTERN →</button></div>
+    </section>
+
+    <section class="page" id="cost">
+      <div class="chapter">VI · What the Pattern Gives — and What It Costs</div>
+      <h2>What does the pattern give you immediately?</h2>
+      <div class="choices" id="rewardChoices"></div>
+      <h3>And what does it tend to cost later?</h3>
+      <div class="choices" id="costChoices"></div>
+      <div class="btnrow"><button class="btn ghost" data-back="spell">← BACK</button><button class="btn primary" id="costNext" disabled>SHOW ME THE LOOP →</button></div>
+    </section>
+
+    <section class="page" id="mapPage">
+      <div class="chapter">VII · Your Pattern Map</div>
+      <h2>The detour makes more sense when you can see the whole road.</h2>
+      <div class="map" id="patternMap"></div>
+      <div class="callout"><b>A working hypothesis — not a verdict.</b><br><span id="hypothesis"></span></div>
+      <p>Now look for the earliest place in the sequence where you have realistic influence. That is the door.</p>
+      <div class="btnrow"><button class="btn ghost" data-back="cost">← BACK</button><button class="btn gold" data-next="door">FIND THE DOOR →</button></div>
+    </section>
+
+    <section class="page" id="door">
+      <div class="chapter">VIII · The Choice Point</div>
+      <h2>Where could choice re-enter the story?</h2>
+      <div class="choices" id="doorChoices"></div>
+      <div class="btnrow"><button class="btn ghost" data-back="mapPage">← BACK</button><button class="btn primary" id="doorNext" disabled>REWRITE ONE LINE →</button></div>
+    </section>
+
+    <section class="page" id="rewrite">
+      <div class="chapter">IX · Rewrite the Spell</div>
+      <h2>We are not replacing one rigid sentence with another.</h2>
+      <p>Choose the more accurate statement you are willing to practice — one your mind and body can actually believe enough to test.</p>
+      <div class="choices" id="rewriteChoices"></div>
+      <div id="rewriteOtherWrap" class="hidden">
+        <label for="rewriteOther"><b>Write a more accurate emerging truth.</b></label>
+        <textarea id="rewriteOther" placeholder="A truer sentence I am willing to practice is…"></textarea>
+      </div>
+      <div class="btnrow"><button class="btn ghost" data-back="door">← BACK</button><button class="btn primary" id="rewriteNext" disabled>CHOOSE THE EXPERIMENT →</button></div>
+    </section>
+
+    <section class="page" id="experiment">
+      <div class="chapter">X · The Seven-Day Experiment</div>
+      <h2>Insight becomes evidence when something changes in the real world.</h2>
+      <p>Choose one small experiment. This is not a test of whether you can be perfect; it is a way to collect new information.</p>
+      <div class="choices" id="experimentChoices"></div>
+      <h3>What will you notice?</h3>
+      <div class="choices" id="measureChoices"></div>
+      <div class="btnrow"><button class="btn ghost" data-back="rewrite">← BACK</button><button class="btn gold" id="finish" disabled>COMPLETE CHAPTER TWO →</button></div>
+    </section>
+
+    <section class="page" id="result">
+      <div class="chapter">Chapter Two Complete</div>
+      <span class="pill">DECIPHER THE PATTERN</span>
+      <h2 id="resultTitle">You found the sentence beneath the detour.</h2>
+      <div class="callout"><b>Your old spell</b><br><span id="oldSpell"></span></div>
+      <div class="callout"><b>Your emerging truth</b><br><span id="newTruth"></span></div>
+      <h3>Your choice point</h3><p id="choicePoint"></p>
+      <h3>Your seven-day experiment</h3><p id="sevenDay"></p>
+      <h3>What to notice</h3><p id="measure"></p>
+      <div class="divider"></div>
+      <p><b>This is the clue Chapter Two adds to your larger Remembering Story:</b></p>
+      <p id="closing"></p>
+      <div id="saveStatus" class="status"></div>
+      <div class="btnrow">
+        <button class="btn ghost" onclick="window.print()">PRINT / SAVE THIS CHAPTER</button>
+        <button class="btn primary" id="restartChapter">REVISIT CHAPTER TWO</button>
+      </div>
+    </section>
+
+    <div class="progressWrap">
+      <div class="progressLine"><div class="progressBar" id="progressBar"></div></div>
+      <div class="progressText" id="progressText">Chapter Two · opening</div>
+    </div>
+  </main>
+
+  <div class="footer">
+    Choose to Own Your Adventure™ · Remembering is a reflective coaching framework. Pattern language is exploratory and non-diagnostic. Seek appropriate licensed or emergency support for medical, mental-health, substance-use, safety, or crisis concerns.
+  </div>
+</div>
+
+<script>
+const CONFIG={
+  API_BASE:"https://remembering-story-api.choosetoownyouradventure.workers.dev",
+  // Chapter Two always saves in this browser. Set true after the Worker accepts a `chapter_two` object.
+  TRY_SERVER_SYNC:true
+};
+
+const VEILS={
+  moon:{
+    client:"Night Traveler Pattern", practitioner:"MOON",
+    responses:["I search for more signs, reassurance, information, or certainty.","I second-guess what I sensed or decided.","I imagine several possible meanings and struggle to know which is real."],
+    meanings:["If I cannot be certain, I may not be safe to act.","My fear might be intuition — or my intuition might be fear.","I need one more sign before I can trust the next step."],
+    spells:["I need to be certain before I can move.","If I choose wrong, I may miss something important.","I cannot trust myself until the uncertainty disappears."],
+    rewrites:["I can act on what is known while staying open to new information.","Discernment does not require perfect certainty.","I can separate what I know, what I sense, and what I still need to learn."],
+    experiments:["For seven days, make one low-risk decision using the information already available before seeking additional reassurance.","When uncertainty rises, write three lines: What I know. What I sense. What I still need to learn."]
+  },
+  chariot:{
+    client:"Pathfinder Pattern", practitioner:"CHARIOT",
+    responses:["I push harder, speed up, or try to force momentum.","I become impatient with pauses, detours, or slower people.","I keep moving even when I am no longer sure the direction fits."],
+    meanings:["If I slow down, I will lose momentum.","Progress proves I am doing this right.","Stopping long enough to reassess feels dangerous."],
+    spells:["I have to keep pushing or I will fall behind.","Slowing down means losing.","If I am not moving fast, I am failing."],
+    rewrites:["Direction matters more than force.","A deliberate pause can protect momentum rather than destroy it.","I can move steadily without driving myself."],
+    experiments:["Choose one important task and work at a deliberately sustainable pace for seven days; stop at the planned stopping point.","Before accelerating, ask: Am I correcting direction or merely adding force?"]
+  },
+  hierophant:{
+    client:"Keeper of the Rules Pattern", practitioner:"HIEROPHANT",
+    responses:["I look for the correct rule, expert, tradition, or authority.","I worry that choosing differently makes me irresponsible or wrong.","I follow what I was taught even when something in me no longer agrees."],
+    meanings:["There is a right way, and I should already know it.","Other people may know better than I do what is acceptable.","Belonging may depend on following the rule."],
+    spells:["I need permission before I can trust my own authority.","If I choose differently, I may be wrong or rejected.","The approved path is safer than my own discernment."],
+    rewrites:["Wisdom can be received, tested, and made my own.","Respecting guidance does not require abandoning inner authority.","I can choose consciously rather than obey automatically."],
+    experiments:["Notice one rule you usually follow automatically and ask who gave it to you, what it protects, and whether you consciously choose it now.","Make one low-risk decision from your own values without seeking permission first."]
+  },
+  tower:{
+    client:"Disrupted Builder Pattern", practitioner:"TOWER",
+    responses:["I jump quickly to what could collapse next.","I feel pressure to rebuild the whole future immediately.","I struggle to see what is still stable when something changes."],
+    meanings:["If one thing changed, everything may be unstable.","I have to solve the whole problem before I can relax.","The disruption means I no longer know what I can trust."],
+    spells:["If one part falls apart, the whole future is in danger.","I have to rebuild everything now.","Nothing is stable enough to begin from."],
+    rewrites:["I do not need the whole future to find the next stable stone.","A disruption can be serious without making everything unstable.","I can rebuild from what is true now."],
+    experiments:["Each day identify one thing that is still true, one thing you can influence, and one next practical action.","Choose one small piece of stability to build rather than trying to solve the entire future."]
+  },
+  sun:{
+    client:"Hidden Radiance Pattern", practitioner:"SUN",
+    responses:["I polish, hide, delay, or minimize what I want to share.","I imagine judgment, misunderstanding, pressure, or rejection if I become visible.","I wait to feel completely ready before letting my work be seen."],
+    meanings:["Being seen may cost me belonging or safety.","If people see the real work, they can judge it.","Visibility creates expectations I may not be able to meet."],
+    spells:["It is safer to stay hidden until I am perfect.","If I am fully seen, I may be rejected or misunderstood.","I need to be more ready before I let this become visible."],
+    rewrites:["Visibility can be practiced without performing a false version of myself.","I can let one honest piece be seen before everything is perfect.","Being visible in tolerable doses is a skill I can practice."],
+    experiments:["Share one small, unfinished-but-useful piece of your work with one appropriately safe person or audience.","Make one contribution visible at 85% ready rather than waiting for perfect."]
+  },
+  empress:{
+    client:"Overgiving Creator Pattern", practitioner:"EMPRESS",
+    responses:["I take care of other people's needs before my own.","I postpone my work until everyone else is settled.","I keep giving until I have little energy left for what matters to me."],
+    meanings:["My needs can wait.","If I do not take care of it, I am letting someone down.","Giving is easier to justify than receiving."],
+    spells:["Everyone else needs to be okay before I can tend to myself.","My needs can wait.","I have to keep giving to be valuable."],
+    rewrites:["I belong inside the circle of care.","Receiving and replenishment can make contribution sustainable.","I can care about others without automatically placing myself last."],
+    experiments:["Protect one non-negotiable 30-minute block for your own meaningful work before responding to a nonurgent request.","Receive one form of help, rest, nourishment, or support without immediately paying it back."]
+  },
+  emperor:{
+    client:"Overresponsible Steward Pattern", practitioner:"EMPEROR",
+    responses:["I take responsibility for more variables or people.","I make tighter plans, monitor more closely, or try to prevent every problem.","I feel responsible even for outcomes I cannot actually control."],
+    meanings:["If I do not manage this, something will go wrong.","Being responsible means anticipating everything.","Other people's choices can become my burden."],
+    spells:["I am responsible for making sure everything turns out okay.","If I loosen control, things may fall apart.","I have to carry what other people do not."],
+    rewrites:["I can be responsible without being responsible for everything.","Boundaries and contingency plans are different from controlling outcomes.","I can do my part and release what is not mine to command."],
+    experiments:["Make two columns — Mine to influence / Not mine to control — and act only on the first.","Delegate, decline, or release one responsibility that does not actually belong to you."]
+  },
+  devil:{
+    client:"Bound Pattern", practitioner:"DEVIL",
+    responses:["I reach for a familiar behavior that promises quick relief.","I know the pattern has a cost but feel pulled toward it anyway.","Afterward I judge myself, which often makes the next urge stronger."],
+    meanings:["I need relief right now.","This is the fastest way to change how I feel.","Once the urge starts, choice feels very small."],
+    spells:["I need this in order to feel better.","The urge is stronger than my ability to choose.","Because I have done this before, I will keep doing it."],
+    rewrites:["An urge can be real without making the choice for me.","I can understand the promise behind the loop without adding shame.","A small pause can create another option."],
+    experiments:["For seven days, record cue → promised relief → behavior → actual result without trying to shame yourself into change.","When the cue appears, insert one safe alternative behavior before deciding what to do next."]
+  },
+  hanged:{
+    client:"Waiting Pattern", practitioner:"HANGED",
+    responses:["I keep thinking, researching, preparing, or waiting for readiness.","I delay because I believe a better perspective is just around the corner.","I avoid a small experiment because I want the right answer first."],
+    meanings:["More reflection will eventually remove the uncertainty.","I should not act until I feel ready.","Waiting protects me from making the wrong move."],
+    spells:["I need more clarity before I can act.","I will know when I am completely ready.","Thinking longer is safer than testing something."],
+    rewrites:["Some clarity arrives only after movement.","A reversible experiment can teach me what more thinking cannot.","Readiness can grow through action."],
+    experiments:["Choose one decision you have researched enough and take the smallest useful reversible step within 24 hours.","Set a review date; until then, gather evidence through action rather than more rumination."]
+  },
+  death:{
+    client:"Threshold-of-Ending Pattern", practitioner:"DEATH",
+    responses:["I keep revisiting something that is already over or changing.","I hold on because letting go feels like erasing what mattered.","I postpone the next chapter while waiting for the old one to make sense."],
+    meanings:["Letting go would betray the past.","If I release this, I lose part of who I was.","An ending means the effort or relationship did not matter."],
+    spells:["I have to keep holding this for it to remain meaningful.","Letting go means losing what was real.","I cannot become the next version of me without betraying the old one."],
+    rewrites:["Releasing an ending does not erase its meaning.","I can keep the lesson without requiring the old chapter to continue.","Grief and forward movement can exist together."],
+    experiments:["Write two lists: What I release / What I carry forward. Take one concrete action that honors the distinction.","Remove, close, cancel, archive, or complete one small remnant of a chapter you know has ended."]
+  },
+  justice:{
+    client:"Inner Judge Pattern", practitioner:"JUSTICE",
+    responses:["I turn a mistake into evidence about who I am.","I overcorrect, rehearse, or punish myself after getting something wrong.","I avoid action because I do not want another reason to judge myself."],
+    meanings:["I should have known better.","Mistakes reveal something bad about my worth or competence.","Accountability means being hard on myself."],
+    spells:["If I make a mistake, it says something about my worth.","I have to get it right to be acceptable.","Self-criticism keeps me responsible."],
+    rewrites:["Truth can guide me without becoming a weapon against me.","A mistake can require repair without becoming an identity.","Accuracy and accountability work better than shame."],
+    experiments:["When you notice self-condemnation, write: What happened? What was the impact? What is mine to own? What repair is possible?","Finish or share one appropriate task at good-enough quality and notice whether less self-punishment changes the outcome."]
+  },
+  lovers:{
+    client:"Crossroads Pattern", practitioner:"LOVERS",
+    responses:["I keep trying to satisfy two competing values, loyalties, or futures.","I delay choosing because I want everyone — including every part of me — to be comfortable.","I spend energy managing other people's disappointment instead of making the decision."],
+    meanings:["A good choice should not disappoint anyone.","Choosing one path means betraying another.","If I decide, I may lose connection or possibility."],
+    spells:["I need a choice that keeps everyone happy.","If someone is disappointed, I chose wrong.","Not choosing protects me from losing either side."],
+    rewrites:["A congruent choice does not have to make every part of me equally comfortable.","I can honor competing values without pretending one decision can satisfy all of them.","Other people's disappointment is information, not automatic proof that my choice is wrong."],
+    experiments:["Write the two values in conflict, the cost of non-choice, and the smallest decision that is actually yours to make.","Make one values-consistent low-risk choice without trying to eliminate every person's disappointment."]
+  }
+};
+
+const GENERIC={
+ triggers:[
+  ["outside","Something happens around me — a request, conflict, criticism, opportunity, uncertainty, or unexpected change."],
+  ["inside","Something happens inside me — doubt, fear, urgency, exhaustion, a memory, or an uncomfortable feeling."],
+  ["visibility","I get close to doing, finishing, sharing, choosing, or asking for what I really want."],
+  ["after","I usually notice the pattern only afterward."],
+  ["other","Something else — I want to describe it."]
+ ],
+ promises:[
+  ["safe","Keep me safe."],["accepted","Keep me accepted or connected."],["certain","Keep me from making the wrong choice."],
+  ["control","Keep things under control."],["unseen","Keep me from being judged, exposed, or misunderstood."],
+  ["useful","Keep me useful, responsible, or needed."],["relief","Give me relief as quickly as possible."],["time","Buy me more time before I have to decide or act."]
+ ],
+ rewards:[
+  ["relief","Immediate relief or reduced tension."],["belonging","A sense of belonging, approval, or usefulness."],
+  ["certainty","A temporary feeling of certainty or control."],["avoid","I postpone risk, conflict, grief, visibility, or disappointment."],
+  ["familiar","It feels familiar, even if it is not helpful."]
+ ],
+ costs:[
+  ["energy","I lose energy or become depleted."],["time","I lose time or momentum."],["voice","I hide, minimize, or postpone my own voice/work."],
+  ["choice","My choices become smaller or more reactive."],["resent","I become resentful, ashamed, frustrated, or self-critical."],
+  ["repeat","I end up back in the same situation again."]
+ ],
+ measures:[
+  ["speed","How quickly I notice the pattern after it begins."],["pause","Whether I can create a pause before the familiar response."],
+  ["action","Whether I complete the chosen experiment."],["energy","My energy before and after the new choice."],
+  ["evidence","What actually happens compared with what the old spell predicted."]
+ ]
+};
+
+const state={
+ story_id:null,resume_token:null,story:null,
+ candidateVeil:null,trigger:null,triggerText:null,response:null,promise:null,
+ meaning:null,spell:null,reward:null,cost:null,door:null,rewrite:null,experiment:null,measure:null
+};
+
+const order=["intro","trigger","response","promise","meaning","spell","cost","mapPage","door","rewrite","experiment","result"];
+function $(id){return document.getElementById(id)}
+function show(id){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  $(id).classList.add("active");
+  const i=Math.max(0,order.indexOf(id));
+  $("progressBar").style.width=((i)/(order.length-1)*100)+"%";
+  $("progressText").textContent=id==="result"?"Chapter Two · complete":`Chapter Two · ${i} of ${order.length-2}`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("[data-next]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.next)));
+document.querySelectorAll("[data-back]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.back)));
+
+function humanize(s){return (s||"").replaceAll("_"," ").replace(/\b\w/g,m=>m.toUpperCase())}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function answer(story,key){return story?.answers?.[key] ?? story?.[key] ?? null}
+function storyResult(){return state.story?.result||{}}
+
+function inferVeil(){
+  const r=storyResult();
+  const raw=(r.primary_veil||r.veil_primary||r.detour_type||answer(state.story,"q6_detour")||"").toLowerCase();
+  const map={
+    fog:"moon",uncertainty:"moon",moon:"moon",overthinking:"moon",
+    force:"chariot",push:"chariot",chariot:"chariot",
+    rules:"hierophant",approval:"hierophant",hierophant:"hierophant",
+    collapse:"tower",disruption:"tower",tower:"tower",
+    visibility:"sun",hiding:"sun",sun:"sun",
+    overgiving:"empress",care:"empress",empress:"empress",
+    control:"emperor",responsibility:"emperor",emperor:"emperor",
+    attachment:"devil",relief:"devil",devil:"devil",
+    waiting:"hanged",delay:"hanged",hanged:"hanged",
+    ending:"death",release:"death",death:"death",
+    judgment:"justice",perfection:"justice",justice:"justice",
+    crossroads:"lovers",choice:"lovers",lovers:"lovers"
+  };
+  for(const [k,v] of Object.entries(map)) if(raw.includes(k)) return v;
+  return null;
+}
+
+function choiceGroup(hostId, items, onPick, selectedValue){
+  const host=$(hostId);host.innerHTML="";
+  items.forEach(item=>{
+    const [value,label,small]=item;
+    const b=document.createElement("button");b.type="button";b.className="choice"+(selectedValue===value?" selected":"");
+    b.innerHTML=`${esc(label)}${small?`<small>${esc(small)}</small>`:""}`;
+    b.addEventListener("click",()=>{
+      host.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");onPick(value,label);
+    });host.appendChild(b);
+  });
+}
+
+function candidate(){
+  return VEILS[state.candidateVeil]||null;
+}
+function responseItems(){
+  const c=candidate();
+  const arr=(c?c.responses:[]).map((x,i)=>[`v${i}`,x]);
+  arr.push(["not_me","None of these quite fits — keep this exploratory."]);
+  return arr;
+}
+function meaningItems(){
+  const c=candidate();
+  const arr=(c?c.meanings:[]).map((x,i)=>[`m${i}`,x]);
+  arr.push(["other","None of these — I want to write what it means to me."]);
+  return arr;
+}
+function spellItems(){
+  const c=candidate();
+  const arr=(c?c.spells:[]).map((x,i)=>[`s${i}`,x]);
+  arr.push(["other","None of these — I want to name my own sentence."]);
+  return arr;
+}
+function rewriteItems(){
+  const c=candidate();
+  const arr=(c?c.rewrites:[]).map((x,i)=>[`r${i}`,x]);
+  arr.push(["other","I want to write a more accurate sentence in my own words."]);
+  return arr;
+}
+function experimentItems(){
+  const c=candidate();
+  const arr=(c?c.experiments:[]).map((x,i)=>[`e${i}`,x]);
+  arr.push(["custom","I want to design my own small, safe seven-day experiment."]);
+  return arr;
+}
+function selectedText(list, code, custom){
+  if(code==="other"||code==="custom") return (custom||"").trim();
+  return list.find(x=>x[0]===code)?.[1]||"";
+}
+
+function setup(){
+  choiceGroup("triggerChoices",GENERIC.triggers,(v,l)=>{
+    state.trigger=v;state.triggerText=l;
+    $("triggerOtherWrap").classList.toggle("hidden",v!=="other");$("triggerNext").disabled=false;
+  });
+  choiceGroup("responseChoices",responseItems(),(v,l)=>{state.response=l;$("responseNext").disabled=false});
+  choiceGroup("promiseChoices",GENERIC.promises,(v,l)=>{state.promise=l;$("promiseNext").disabled=false});
+  choiceGroup("meaningChoices",meaningItems(),(v,l)=>{
+    state.meaning=v;$("meaningOtherWrap").classList.toggle("hidden",v!=="other");$("meaningNext").disabled=false;
+  });
+  choiceGroup("spellChoices",spellItems(),(v,l)=>{
+    state.spell=v;$("spellOtherWrap").classList.toggle("hidden",v!=="other");$("spellNext").disabled=false;
+  });
+  choiceGroup("rewardChoices",GENERIC.rewards,(v,l)=>{state.reward=l;checkCost()});
+  choiceGroup("costChoices",GENERIC.costs,(v,l)=>{state.cost=l;checkCost()});
+  choiceGroup("rewriteChoices",rewriteItems(),(v,l)=>{
+    state.rewrite=v;$("rewriteOtherWrap").classList.toggle("hidden",v!=="other");$("rewriteNext").disabled=false;
+  });
+  choiceGroup("experimentChoices",experimentItems(),(v,l)=>{state.experiment=l;$("finish").disabled=!(state.experiment&&state.measure)});
+  choiceGroup("measureChoices",GENERIC.measures,(v,l)=>{state.measure=l;$("finish").disabled=!(state.experiment&&state.measure)});
+}
+function checkCost(){$("costNext").disabled=!(state.reward&&state.cost)}
+
+$("triggerNext").addEventListener("click",()=>{
+  if(state.trigger==="other"){
+    const t=$("triggerOther").value.trim(); if(!t){alert("Add a few words about what happens before the pattern begins.");return}
+    state.triggerText=t;
+  } show("response");
+});
+$("responseNext").addEventListener("click",()=>show("promise"));
+$("promiseNext").addEventListener("click",()=>show("meaning"));
+$("meaningNext").addEventListener("click",()=>{
+  if(state.meaning==="other"&&!$("meaningOther").value.trim()){alert("Write a few words about what the moment seems to mean.");return}
+  show("spell");
+});
+$("spellNext").addEventListener("click",()=>{
+  if(state.spell==="other"&&!$("spellOther").value.trim()){alert("Name the sentence underneath the pattern before continuing.");return}
+  show("cost");
+});
+$("costNext").addEventListener("click",()=>{renderMap();show("mapPage")});
+
+function currentMeaning(){return selectedText(meaningItems(),state.meaning,$("meaningOther").value)}
+function currentSpell(){return selectedText(spellItems(),state.spell,$("spellOther").value)}
+
+function renderMap(){
+  const rows=[
+    ["Something happens",state.triggerText],
+    ["I make it mean",currentMeaning()],
+    ["The spell says",`“${currentSpell()}”`],
+    ["So I tend to",state.response],
+    ["The immediate reward",state.reward],
+    ["The later cost",state.cost],
+    ["Which can reinforce",`the feeling that “${currentSpell()}” was true in the first place.`]
+  ];
+  $("patternMap").innerHTML=rows.map(([a,b])=>`<div class="maprow"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("");
+  const c=candidate();
+  $("hypothesis").textContent=c
+    ? `Your Chapter One detour and these answers are consistent with a ${c.client} worth exploring. The pattern may be using “${currentSpell()}” to pursue ${state.promise.toLowerCase()}`
+    : `Your answers suggest a repeatable loop worth exploring. The most useful clue is not a label but the relationship between “${currentSpell()},” the immediate reward, and the later cost.`;
+  buildDoorChoices();
+}
+function buildDoorChoices(){
+  const items=[
+    ["meaning","At the meaning — question the interpretation before it hardens into a rule."],
+    ["spell","At the spell — name the old sentence instead of automatically obeying it."],
+    ["response","At the response — pause before the familiar behavior."],
+    ["reward","At the reward — find another safe way to meet the need the pattern is promising."],
+    ["repair","Afterward — notice the pattern sooner and repair without shame."]
+  ];
+  choiceGroup("doorChoices",items,(v,l)=>{state.door=l;$("doorNext").disabled=false});
+}
+$("doorNext").addEventListener("click",()=>show("rewrite"));
+$("rewriteNext").addEventListener("click",()=>{
+  if(state.rewrite==="other"&&!$("rewriteOther").value.trim()){alert("Write the more accurate sentence you want to practice.");return}
+  show("experiment");
+});
+
+function currentRewrite(){return selectedText(rewriteItems(),state.rewrite,$("rewriteOther").value)}
+
+$("finish").addEventListener("click",async()=>{
+  const c=candidate();
+  const payload={
+    version:"chapter2-v1",
+    completed_at:new Date().toISOString(),
+    candidate_veil:state.candidateVeil,
+    client_pattern:c?.client||null,
+    trigger:state.triggerText,
+    response:state.response,
+    protective_promise:state.promise,
+    meaning:currentMeaning(),
+    old_spell:currentSpell(),
+    immediate_reward:state.reward,
+    later_cost:state.cost,
+    choice_point:state.door,
+    emerging_truth:currentRewrite(),
+    seven_day_experiment:state.experiment,
+    measure:state.measure
+  };
+  const key=`ctya_chapter2_${state.story_id||"local"}`;
+  localStorage.setItem(key,JSON.stringify(payload));
+
+  $("oldSpell").textContent=`“${payload.old_spell}”`;
+  $("newTruth").textContent=`“${payload.emerging_truth}”`;
+  $("choicePoint").textContent=payload.choice_point;
+  $("sevenDay").textContent=payload.seven_day_experiment;
+  $("measure").textContent=payload.measure;
+  $("closing").textContent=c
+    ? `A ${c.client} may be part of the detour you are learning to recognize. The goal is not to eliminate a part of yourself; it is to understand what the pattern has been trying to accomplish and practice a more flexible response.`
+    : `You identified a trigger, a hidden promise, the sentence beneath it, and a realistic place where choice can return. That pattern map can now travel with the rest of your Remembering Story.`;
+  $("saveStatus").textContent="Chapter Two is saved in this browser.";
+  show("result");
+
+  if(CONFIG.TRY_SERVER_SYNC && state.story_id && state.resume_token){
+    try{
+      const r=await fetch(`${CONFIG.API_BASE}/stories/${encodeURIComponent(state.story_id)}`,{
+        method:"PATCH",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({resume_token:state.resume_token,chapter_two:payload})
+      });
+      const data=await r.json().catch(()=>({}));
+      if(r.ok && data.success){
+        $("saveStatus").textContent="Chapter Two is saved to your Remembering Story.";
+      }else{
+        $("saveStatus").textContent="Chapter Two is saved in this browser. The current Story API has not yet accepted the Chapter Two data package.";
+      }
+    }catch(e){
+      $("saveStatus").textContent="Chapter Two is saved in this browser. Server sync will activate after the Chapter Two API upgrade.";
+    }
+  }
+});
+
+$("restartChapter").addEventListener("click",()=>{
+  if(confirm("Revisit Chapter Two? Your saved completed chapter will remain until you complete it again.")) show("intro");
+});
+
+async function reopen(){
+  const params=new URLSearchParams(location.search);
+  state.story_id=params.get("story")||localStorage.getItem("ctya_story_id");
+  state.resume_token=localStorage.getItem("ctya_resume_token");
+  if(!state.story_id){
+    $("loadError").textContent="I cannot find a Story ID. Please complete Chapter One first, then choose “Continue My Story.”";
+    $("loadError").classList.remove("hidden");return;
+  }
+  if(!state.resume_token){
+    $("loadError").textContent="I found your Story ID, but this browser does not have the private resume token created in Chapter One. For now, reopen Chapter Two from the same browser where you completed Chapter One.";
+    $("loadError").classList.remove("hidden");return;
+  }
+  try{
+    const r=await fetch(`${CONFIG.API_BASE}/stories/resume`,{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({story_id:state.story_id,resume_token:state.resume_token})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.success) throw new Error(data.error||"Your saved story could not be reopened.");
+    state.story=data.story;
+    state.candidateVeil=inferVeil();
+    setup();
+
+    const rr=storyResult();
+    const first=state.story?.first_name||localStorage.getItem("ctya_first_name")||"Traveler";
+    const detour=answer(state.story,"q6_detour")||rr.detour_type;
+    const threshold=answer(state.story,"q7_threshold")||rr.threshold_desire;
+    const c=candidate();
+    $("storyBridge").innerHTML=
+      `<b>${esc(first)}, Chapter One left you at a threshold.</b><br>`+
+      `${detour?`You recognized a detour connected with <em>${esc(humanize(detour))}</em>. `:""}`+
+      `${threshold?`You also named <em>${esc(humanize(threshold))}</em> as something you want more of in the next chapter. `:""}`+
+      `${c?`One possible pattern to test first is the <b>${esc(c.client)}</b>. You are free to reject it if it does not fit.`:"We will let your answers build the pattern rather than forcing a label."}`;
+    show("intro");
+  }catch(e){
+    $("loadError").textContent=e.message;
+    $("loadError").classList.remove("hidden");
+  }
+}
+reopen();
+</script>
+</body>
+</html>
