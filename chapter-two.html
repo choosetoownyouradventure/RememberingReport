@@ -493,6 +493,27 @@ function experimentItems(){
   const source=Array.isArray(c?.experiments)&&c.experiments.length?c.experiments:fallback;
   return [...source.map((x,i)=>[`e${i}`,x]),["custom","I want to design my own small, safe seven-day experiment."]];
 }
+function evidenceSpec(){
+  const specs={
+    moon:{behavioral_measure:"Number of low-risk decisions made using the information already available before seeking additional reassurance.",evidence_question:"When you acted without complete certainty, what actually happened compared with what uncertainty predicted?"},
+    chariot:{behavioral_measure:"Number of times you used a deliberate pause or sustainable stopping point instead of automatically pushing harder.",evidence_question:"When you reduced force and checked direction, what happened to your progress, energy, or outcome?"},
+    hierophant:{behavioral_measure:"Number of choices in which you consciously tested a rule or outside expectation against your own values before acting.",evidence_question:"When you used your own discernment instead of automatic permission-seeking, what actually happened?"},
+    tower:{behavioral_measure:"Number of times you chose one stabilizing next step instead of trying to solve the entire disruption at once.",evidence_question:"When you focused on the next stable step, what changed in your sense of capacity or in the situation itself?"},
+    sun:{behavioral_measure:"Number of small acts of authentic visibility completed during the seven-day experiment.",evidence_question:"When you allowed yourself or your work to be seen, what actually happened compared with what you feared would happen?"},
+    empress:{behavioral_measure:"Number of protected blocks for your own meaningful work completed before responding to nonurgent requests.",evidence_question:"When you put your meaningful work or nourishment first, what actually happened to the people or responsibilities you normally would have attended to first?"},
+    emperor:{behavioral_measure:"Number of situations in which you shared responsibility, allowed flexibility, or chose a clear boundary instead of taking over.",evidence_question:"When you loosened control without abandoning responsibility, what actually happened?"},
+    devil:{behavioral_measure:"Number of times you noticed the cue and substituted a different safe response before the familiar relief behavior.",evidence_question:"When you changed the middle of the cue-behavior-reward loop, what happened to the urge, relief, and later cost?"},
+    hanged:{behavioral_measure:"Number of small, reversible actions taken before complete certainty or perfect readiness arrived.",evidence_question:"When you acted before you felt completely certain, what useful evidence became available that waiting could not provide?"},
+    death:{behavioral_measure:"Number of concrete release actions completed toward something you have already identified as ending or complete.",evidence_question:"When you allowed one part of the ending to be real, what became available in its place?"},
+    justice:{behavioral_measure:"Number of tasks completed, shared, or submitted at a good-enough standard rather than held for perfection.",evidence_question:"When you allowed good-enough completion, what actually happened compared with the judgment you anticipated?"},
+    lovers:{behavioral_measure:"Number of choices made by naming the competing values and selecting one conscious next step instead of remaining in non-choice.",evidence_question:"When you made a conscious choice without eliminating every competing value, what actually happened?"}
+  };
+  return specs[state.candidateVeil]||{
+    behavioral_measure:"Number of times you completed the chosen experiment or interrupted the familiar pattern during the seven days.",
+    evidence_question:"When you made the new choice, what actually happened compared with what the old spell predicted?"
+  };
+}
+
 function selectedText(list, code, custom){
   if(code==="other"||code==="custom") return (custom||"").trim();
   return list.find(x=>x[0]===code)?.[1]||"";
@@ -580,7 +601,7 @@ function currentRewrite(){return selectedText(rewriteItems(),state.rewrite,$("re
 $("finish").addEventListener("click",async()=>{
   const c=candidate();
   const payload={
-    version:"chapter2-v2",
+    version:"chapter2-v3",
     completed_at:new Date().toISOString(),
     candidate_veil:state.candidateVeil,
     client_pattern:c?.client||null,
@@ -594,7 +615,9 @@ $("finish").addEventListener("click",async()=>{
     choice_point:state.door,
     emerging_truth:currentRewrite(),
     seven_day_experiment:state.experiment,
-    measure:state.measure
+    measure:state.measure,
+    behavioral_measure:evidenceSpec().behavioral_measure,
+    evidence_question:evidenceSpec().evidence_question
   };
   const key=`ctya_chapter2_${state.story_id||"local"}`;
   localStorage.setItem(key,JSON.stringify(payload));
@@ -603,7 +626,7 @@ $("finish").addEventListener("click",async()=>{
   $("newTruth").textContent=`“${payload.emerging_truth}”`;
   $("choicePoint").textContent=payload.choice_point;
   $("sevenDay").textContent=payload.seven_day_experiment;
-  $("measure").textContent=payload.measure;
+  $("measure").textContent=payload.measure + " Evidence to collect: " + payload.behavioral_measure + " " + payload.evidence_question;
   $("closing").textContent=c
     ? `A ${c.client} may be part of the detour you are learning to recognize. The goal is not to eliminate a part of yourself; it is to understand what the pattern has been trying to accomplish and practice a more flexible response.`
     : `You identified a trigger, a hidden promise, the sentence beneath it, and a realistic place where choice can return. That pattern map can now travel with the rest of your Remembering Story.`;
@@ -616,7 +639,7 @@ $("finish").addEventListener("click",async()=>{
         method:"PUT",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
           resume_token:state.resume_token,
-          version:"chapter2-v2",
+          version:"chapter2-v3",
           status:"complete",
           answers:{
             trigger:payload.trigger,
@@ -629,14 +652,18 @@ $("finish").addEventListener("click",async()=>{
             choice_point:payload.choice_point,
             emerging_truth:payload.emerging_truth,
             seven_day_experiment:payload.seven_day_experiment,
-            measure:payload.measure
+            measure:payload.measure,
+            behavioral_measure:payload.behavioral_measure,
+            evidence_question:payload.evidence_question
           },
           result:{
             candidate_veil:payload.candidate_veil,
             client_pattern:payload.client_pattern,
             emerging_truth:payload.emerging_truth,
             seven_day_experiment:payload.seven_day_experiment,
-            measure:payload.measure
+            measure:payload.measure,
+            behavioral_measure:payload.behavioral_measure,
+            evidence_question:payload.evidence_question
           }
         })
       });
