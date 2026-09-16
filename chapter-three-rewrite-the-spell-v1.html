@@ -146,7 +146,7 @@ function defaultClient(){
     bridge_selection:"",
     experiment_choice:"",
     custom_experiment:"",
-    anchor_type:"",
+    anchor_types:[],
     anchor_text:"",
     current_step:"opening"
   };
@@ -510,18 +510,96 @@ experiment(){
  bindNav(()=>{client.experiment_choice=oneChecked("experiment")||client.experiment_choice;client.custom_experiment=val("customExp");if(!client.experiment_choice){alert("Choose how you want to use your seven-day experiment.");return false}if(client.experiment_choice!=="keep"&&!client.custom_experiment){alert("Write the action you want to try.");return false}return true});
 },
 anchor(){
- const opts=["My relationship with God / faith","Prayer or Scripture","My body","Breath","A physical gesture or movement","An image or symbol","Music or sound","Nature","A meaningful object","Something else","I don't want an anchor right now"];
+ const opts=[
+   "My relationship with God / faith",
+   "Prayer or Scripture",
+   "My body",
+   "Breath",
+   "A physical gesture or movement",
+   "An image or symbol",
+   "Music or sound",
+   "Nature",
+   "A meaningful object",
+   "Something else",
+   "I don't want an anchor right now"
+ ];
+
+ const noAnchor="I don't want an anchor right now";
+
  document.getElementById("page").innerHTML=`
- <div class="kicker">Anchor the truth</div><h2>What will help you remember?</h2>
- <p>Some truths are easier to remember when we connect them to something deeper than thought. Choose only what genuinely fits you.</p>
- <div class="choices">${opts.map(o=>`<label class="choice"><input type="radio" name="anchor" value="${esc(o)}" ${client.anchor_type===o?"checked":""}>${esc(o)}</label>`).join("")}</div>
- <label for="anchorText">What will you use? <span class="hint">(optional)</span></label><textarea id="anchorText" placeholder="A prayer, Scripture, phrase, gesture, image, song, object, or other reminder.">${esc(client.anchor_text)}</textarea>
+ <div class="kicker">Anchor the truth</div>
+ <h2>What will help you remember?</h2>
+
+ <p>
+   Some truths are easier to remember when we connect them to something
+   deeper than thought. Choose whatever genuinely fits you. You may choose
+   more than one.
+ </p>
+
+ <div class="choices">
+   ${opts.map(o=>`
+     <label class="choice">
+       <input
+         type="checkbox"
+         name="anchor"
+         value="${esc(o)}"
+         ${client.anchor_types.includes(o)?"checked":""}
+       >
+       ${esc(o)}
+     </label>
+   `).join("")}
+ </div>
+
+ <label for="anchorText">
+   What will you use?
+   <span class="hint">(optional)</span>
+ </label>
+
+ <textarea
+   id="anchorText"
+   placeholder="A prayer, Scripture, phrase, gesture, image, song, object, or other reminder."
+ >${esc(client.anchor_text)}</textarea>
+
  ${navButtons(true,"Complete Chapter Three →")}`;
- document.querySelectorAll('input[name="anchor"]').forEach(e=>e.onchange=()=>{client.anchor_type=e.value;scheduleSave()});
- document.getElementById("anchorText").oninput=e=>{client.anchor_text=e.target.value;scheduleSave()};
+
+ const boxes=[...document.querySelectorAll('input[name="anchor"]')];
+
+ boxes.forEach(box=>{
+   box.onchange=()=>{
+
+     if(box.value===noAnchor && box.checked){
+       boxes.forEach(other=>{
+         if(other.value!==noAnchor) other.checked=false;
+       });
+     }
+
+     if(box.value!==noAnchor && box.checked){
+       const noneBox=boxes.find(other=>other.value===noAnchor);
+       if(noneBox) noneBox.checked=false;
+     }
+
+     client.anchor_types=checked("anchor");
+     scheduleSave();
+   };
+ });
+
+ document.getElementById("anchorText").oninput=e=>{
+   client.anchor_text=e.target.value;
+   scheduleSave();
+ };
+
  bindNav(()=>{
-   client.anchor_type=oneChecked("anchor")||client.anchor_type;client.anchor_text=val("anchorText");
-   if(!client.anchor_type){alert("Choose an anchor option, including “I don't want an anchor right now” if that fits.");return false}
+
+   client.anchor_types=checked("anchor");
+   client.anchor_text=val("anchorText");
+
+   if(!client.anchor_types.length){
+     alert(
+       "Choose at least one anchor, or select “I don't want an anchor right now” if that fits."
+     );
+     return false;
+   }
+
    result={
      old_spell:oldSpell(),
      client_stated_belief:client.rule_completion,
@@ -531,35 +609,57 @@ anchor(){
      identity_implication:client.identity_meaning,
      emerging_truth:source.emerging_truth||"",
      chosen_rewrite:chosenRewrite(),
-     rewrite_source:client.rewrite_selection.selected_option==="custom"?"client_authored":`guided_${client.rewrite_selection.selected_option}`,
+
+     rewrite_source:
+       client.rewrite_selection.selected_option==="custom"
+         ?"client_authored"
+         :`guided_${client.rewrite_selection.selected_option}`,
+
      bridge_belief:bridgeBelief(),
      old_belief_strength:client.old_spell_strength,
      new_belief_strength:client.new_belief_strength,
-     belief_gap:(Number(client.old_spell_strength)||0)-(Number(client.new_belief_strength)||0),
+
+     belief_gap:
+       (Number(client.old_spell_strength)||0)-
+       (Number(client.new_belief_strength)||0),
+
      aligned_action:alignedAction(),
      behavioral_measure:source.behavioral_measure||"",
      evidence_question:source.evidence_question||"",
-     anchor_type:client.anchor_type,
+
+     anchor_types:client.anchor_types||[],
      anchor_text:client.anchor_text,
      chosen_path:client.chosen_path,
+
      handoff:{
-       old_spell:oldSpell(),chosen_rewrite:chosenRewrite(),bridge_belief:bridgeBelief(),
-       old_belief_strength:client.old_spell_strength,new_belief_strength:client.new_belief_strength,
-       rewrite_response:client.rewrite_response,protective_function:client.protective_functions.join("; "),
-       feared_consequence:client.predicted_consequence,aligned_action:alignedAction(),
-       anchor_type:client.anchor_type,anchor_text:client.anchor_text,
-       body_exploration_prompt:"When you read your old spell and then your new statement, notice whether anything changes in your breathing, posture, muscle tension, temperature, movement, or other body sensations."
+       old_spell:oldSpell(),
+       chosen_rewrite:chosenRewrite(),
+       bridge_belief:bridgeBelief(),
+       old_belief_strength:client.old_spell_strength,
+       new_belief_strength:client.new_belief_strength,
+       rewrite_response:client.rewrite_response,
+       protective_function:client.protective_functions.join("; "),
+       feared_consequence:client.predicted_consequence,
+       aligned_action:alignedAction(),
+
+       anchor_types:client.anchor_types,
+       anchor_text:client.anchor_text,
+
+       body_exploration_prompt:
+         "When you read your old spell and then your new statement, notice whether anything changes in your breathing, posture, muscle tension, temperature, movement, or other body sensations."
      }
    };
+
    client.current_step="complete";
    save("complete",result);
+
    return true;
  });
 },
 complete(){
  const r=result&&result.chosen_rewrite?result:{
    old_spell:oldSpell(),emerging_truth:source.emerging_truth||"",chosen_rewrite:chosenRewrite(),
-   bridge_belief:bridgeBelief(),aligned_action:alignedAction(),anchor_type:client.anchor_type,anchor_text:client.anchor_text
+   bridge_belief:bridgeBelief(),aligned_action:alignedAction(),anchor_types:client.anchor_types||[],anchor_text:client.anchor_text
  };
  document.getElementById("page").innerHTML=`
  <div class="kicker">Chapter Three Complete</div><h2>The spell has been rewritten.</h2>
@@ -572,8 +672,17 @@ complete(){
   <div class="summary-card"><b>The rewrite</b>${esc(r.chosen_rewrite||chosenRewrite())}</div>
   <div class="summary-card"><b>The bridge</b>${esc(r.bridge_belief||bridgeBelief())}</div>
   <div class="summary-card"><b>Your next piece of evidence</b>${esc(r.aligned_action||alignedAction())}</div>
-  <div class="summary-card"><b>Your anchor</b>${esc([r.anchor_type||client.anchor_type,r.anchor_text||client.anchor_text].filter(Boolean).join(" — "))}</div>
- </div>
+<div class="summary-card">
+  <b>${((r.anchor_types||client.anchor_types||[]).length>1)?"Your anchors":"Your anchor"}</b>
+  ${esc(
+    [
+      ...(r.anchor_types||client.anchor_types||[]),
+      r.anchor_text||client.anchor_text
+    ]
+    .filter(Boolean)
+    .join(" · ")
+  )}
+</div>
  <p>This isn't a promise that the old words will disappear. The difference is that now, when the old spell speaks, <b>you know it is speaking—and you have another sentence available.</b></p>
  <hr class="rule">
  <div class="kicker">At the edge of the next chapter</div><h3>You changed the words. But a spell doesn't live only in words.</h3>
