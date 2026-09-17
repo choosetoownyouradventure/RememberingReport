@@ -551,53 +551,17 @@ experiment(){
 },
 anchor(){
  const opts=["My relationship with God / faith","Prayer or Scripture","My body","Breath","A physical gesture or movement","An image or symbol","Music or sound","Nature","A meaningful object","Something else","I don't want an anchor right now"];
-
- // Backward-compatible: existing single anchors and new multi-anchor strings both work.
- const selectedAnchors=(client.anchor_type||"")
-   .split(";")
-   .map(x=>x.trim())
-   .filter(Boolean);
-
  document.getElementById("page").innerHTML=`
  <div class="kicker">Anchor the truth</div><h2>What will help you remember?</h2>
- <p>Some truths are easier to remember when we connect them to something deeper than thought. Choose as many as genuinely fit you.</p>
- <div class="choices">${opts.map(o=>`<label class="choice"><input type="checkbox" name="anchor" value="${esc(o)}" ${selectedAnchors.includes(o)?"checked":""}>${esc(o)}</label>`).join("")}</div>
+ <p>Some truths are easier to remember when we connect them to something deeper than thought. Choose only what genuinely fits you.</p>
+ <div class="choices">${opts.map(o=>`<label class="choice"><input type="radio" name="anchor" value="${esc(o)}" ${client.anchor_type===o?"checked":""}>${esc(o)}</label>`).join("")}</div>
  <label for="anchorText">What will you use? <span class="hint">(optional)</span></label><textarea id="anchorText" placeholder="A prayer, Scripture, phrase, gesture, image, song, object, or other reminder.">${esc(client.anchor_text)}</textarea>
  ${navButtons(true,"Complete Chapter Three →")}`;
-
- document.querySelectorAll('input[name="anchor"]').forEach(e=>e.onchange=()=>{
-   let selections=checked("anchor");
-
-   // "No anchor" should stand alone.
-   if(e.value==="I don't want an anchor right now" && e.checked){
-     document.querySelectorAll('input[name="anchor"]').forEach(x=>{
-       if(x!==e)x.checked=false;
-     });
-     selections=["I don't want an anchor right now"];
-   } else if(e.checked){
-     const none=document.querySelector('input[name="anchor"][value="I don\'t want an anchor right now"]');
-     if(none)none.checked=false;
-     selections=checked("anchor");
-   }
-
-   client.anchor_type=selections.join("; ");
-   scheduleSave();
- });
-
- document.getElementById("anchorText").oninput=e=>{
-   client.anchor_text=e.target.value;
-   scheduleSave();
- };
-
+ document.querySelectorAll('input[name="anchor"]').forEach(e=>e.onchange=()=>{client.anchor_type=e.value;scheduleSave()});
+ document.getElementById("anchorText").oninput=e=>{client.anchor_text=e.target.value;scheduleSave()};
  bindNav(()=>{
-   client.anchor_type=checked("anchor").join("; ");
-   client.anchor_text=val("anchorText");
-
-   if(!client.anchor_type){
-     alert("Choose one or more anchor options, including “I don't want an anchor right now” if that fits.");
-     return false;
-   }
-
+   client.anchor_type=oneChecked("anchor")||client.anchor_type;client.anchor_text=val("anchorText");
+   if(!client.anchor_type){alert("Choose an anchor option, including “I don't want an anchor right now” if that fits.");return false}
    result={
      old_spell:oldSpell(),
      client_stated_belief:client.rule_completion,
@@ -619,25 +583,18 @@ anchor(){
      anchor_text:client.anchor_text,
      chosen_path:client.chosen_path,
      handoff:{
-       old_spell:oldSpell(),
-       chosen_rewrite:chosenRewrite(),
-       bridge_belief:bridgeBelief(),
-       old_belief_strength:client.old_spell_strength,
-       new_belief_strength:client.new_belief_strength,
-       rewrite_response:client.rewrite_response,
-       protective_function:client.protective_functions.join("; "),
-       feared_consequence:client.predicted_consequence,
-       aligned_action:alignedAction(),
-       anchor_type:client.anchor_type,
-       anchor_text:client.anchor_text,
+       old_spell:oldSpell(),chosen_rewrite:chosenRewrite(),bridge_belief:bridgeBelief(),
+       old_belief_strength:client.old_spell_strength,new_belief_strength:client.new_belief_strength,
+       rewrite_response:client.rewrite_response,protective_function:client.protective_functions.join("; "),
+       feared_consequence:client.predicted_consequence,aligned_action:alignedAction(),
+       anchor_type:client.anchor_type,anchor_text:client.anchor_text,
        body_exploration_prompt:"When you read your old spell and then your new statement, notice whether anything changes in your breathing, posture, muscle tension, temperature, movement, or other body sensations."
      }
    };
-
    client.current_step="complete";
+   // Completion is saved by bindNav after the completed page renders.
    return true;
  });
-},
 },
 complete(){
  const r=result&&result.chosen_rewrite?result:{
@@ -665,16 +622,8 @@ complete(){
  <p>Where do you feel the old story? And where—perhaps very quietly—do you feel the new one beginning?</p>
  <h3>Chapter Four · The Body Remembers →</h3>
  <div id="saveStatus" class="status ok">Chapter Three is saved to your Remembering Story.</div>
- <div class="actions">
-  <button class="secondary" onclick="window.print()">Print / Save This Chapter</button>
-  <button class="primary" id="reviewBtn">Revisit Chapter Three</button>
-  <button class="primary" id="continueBtn">Continue to Chapter Four →</button>
-</div>`;
+ <div class="actions"><button class="secondary" onclick="window.print()">Print / Save This Chapter</button><button class="primary" id="reviewBtn">Revisit Chapter Three</button></div>`;
  document.getElementById("reviewBtn").onclick=()=>{pageIndex=1;client.current_step=pages[1];cacheLocal();render();window.scrollTo({top:0,behavior:"smooth"})};
- document.getElementById("continueBtn").onclick=()=>{
-  window.location.href=
-    `chapter-four-the-body-remembers-v1.html?story=${encodeURIComponent(storyId)}`;
-}; 
   const status=document.getElementById("saveStatus");
   if(status && !chapterCompleted){
     status.textContent="Confirming the completed chapter in your Story Vault…";
