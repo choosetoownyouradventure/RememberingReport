@@ -241,9 +241,10 @@ textarea{min-height:110px;resize:vertical}
 
       <div id="saveStatus" class="status"></div>
       <div class="btnrow">
-        <button class="btn ghost" onclick="window.print()">PRINT / SAVE THIS CHAPTER</button>
-        <button class="btn primary" id="restartChapter">REVISIT CHAPTER TWO</button>
-      </div>
+  <button class="btn ghost" onclick="window.print()">PRINT / SAVE THIS CHAPTER</button>
+  <button class="btn primary" id="restartChapter">REVISIT CHAPTER TWO</button>
+  <button class="btn gold" id="continueChapter">CONTINUE TO CHAPTER THREE →</button>
+</div>
     </section>
 
     <div class="progressWrap">
@@ -715,6 +716,11 @@ $("restartChapter").addEventListener("click",()=>{
   if(confirm("Revisit Chapter Two? Your saved completed chapter will remain until you complete it again.")) show("intro");
 });
 
+$("continueChapter").addEventListener("click",()=>{
+  window.location.href =
+    `chapter-three-rewrite-the-spell-v1.html?story=${encodeURIComponent(state.story_id)}`;
+});
+  
 async function reopen(){
   const params=new URLSearchParams(location.search);
   state.story_id=params.get("story")||localStorage.getItem("ctya_story_id");
