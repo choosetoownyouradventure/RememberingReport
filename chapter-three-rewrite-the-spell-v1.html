@@ -595,10 +595,12 @@ complete(){
  <p>Sometimes the mind understands something long before another part of us is willing to believe it: a tightened jaw, a held breath, a stomach that drops, shoulders preparing for something that hasn't happened yet.</p>
  <div class="quote"><strong>Read your new words one more time</strong>${esc(r.chosen_rewrite||chosenRewrite())}</div>
  <p>Where do you feel the old story? And where—perhaps very quietly—do you feel the new one beginning?</p>
- <h3>Chapter Four · The Body Remembers →</h3>
+ <h3>The next chapter is waiting.</h3>
+ <p>You changed the words. Now discover what your body remembers.</p>
  <div id="saveStatus" class="status ok">Chapter Three is saved to your Remembering Story.</div>
  <div class="actions"><button class="secondary" onclick="window.print()">Print / Save This Chapter</button><button class="primary" id="reviewBtn">Revisit Chapter Three</button><button class="primary" id="continueBtn">Continue to Chapter Four →</button></div>`;
  document.getElementById("reviewBtn").onclick=()=>{pageIndex=1;client.current_step=pages[1];cacheLocal();render();window.scrollTo({top:0,behavior:"smooth"})};
+ document.getElementById("continueBtn").onclick=()=>{window.location.href=`chapter-four-the-body-remembers-v1.html?story=${encodeURIComponent(storyId)}`;};
   const status=document.getElementById("saveStatus");
   if(status && !chapterCompleted){
     status.textContent="Confirming the completed chapter in your Story Vault…";
