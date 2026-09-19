@@ -224,7 +224,11 @@
           <input id="email" type="email" maxlength="254" autocomplete="email">
           <label class="consent">
             <input id="consent" type="checkbox">
-            <span>Save my place and send my Story Page. I agree that my answers may be stored and used to personalize this Remembering experience and any story I choose to continue. <a href="privacy.html" target="_blank" rel="noopener">Privacy</a>.</span>
+            <span>Required: Save my answers and contact information to create and email my personalized Story Page and allow me to continue. I understand ISABELL receives a copy of the Story Page to administer this experience and respond to my requests. I have read the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+          </label>
+          <label class="consent">
+            <input id="marketingOptIn" type="checkbox">
+            <span>Optional: I'd like occasional emails from ISABELL with reflective insights, program information, and invitations. I can unsubscribe at any time. This choice is not required to receive my Story Page.</span>
           </label>
           <div class="error hidden" id="saveError"></div>
           <div class="status hidden" id="saveStatus"></div>
@@ -284,7 +288,7 @@
               <button class="cta" id="continueStory"><strong>FOLLOW THE CLUE → CONTINUE MY STORY</strong><span>Go deeper into the mystery and decipher the pattern that keeps appearing at the edge of your next chapter.</span></button>
               <button class="cta" id="talkGuide"><strong>SEEK THE GUIDE → TALK WITH MY STORY GUIDE</strong><span>Another clue may be easier to see with a guide beside you. Bring your story and explore what the road is asking of you next.</span></button>
             </div>
-            <div class="chapter-note" id="emailStatus">Your Story Page is saved on this device. We’ll also send a copy to the email you provided.</div>
+            <div class="chapter-note" id="emailStatus">Your story is saved. We’ll attempt to email your Story Page and show the result here.</div>
             <div class="story-id-box"><span>Story reference: <strong id="storyIdText"></strong></span><button class="btn secondary" id="copyStoryId" type="button">COPY STORY ID</button></div>
           </div>
         </div>
@@ -487,6 +491,9 @@
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify({
             first_name,email,
+            assessment_consent: consent,
+            consent_version: "remembering-consent-2026-09-v1",
+            marketing_opt_in: document.getElementById("marketingOptIn").checked,
             entry_path:state.entry_path,
             q1_childhood_clue:state.q1_childhood_clue,
             q2_life_role:state.q2_life_role,
@@ -597,6 +604,16 @@
       document.getElementById("storyIdText").textContent=story.story_id||state.story_id||"";
     }
 
+    async function recordEmailStatus(outcome){
+      if(!state.story_id || !state.resume_token) return;
+      try {
+        await fetch(`${CONFIG.API_BASE}/stories/${encodeURIComponent(state.story_id)}/email-status`, {
+          method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({resume_token:state.resume_token,status:outcome})
+        });
+      } catch(e) { console.warn("Email status could not be recorded:",e); }
+    }
+
     async function sendStoryEmail(story){
       const status=document.getElementById("emailStatus");
       if(!window.emailjs){
@@ -631,8 +648,8 @@
 
         const params={
           logo_url: "https://raw.githubusercontent.com/choosetoownyouradventure/RememberingReport/main/ISABELL_Logo_CtOYA.png",
-          
           // Recipient / greeting
+          continue_story_url: `${CONFIG.CONTINUE_STORY_URL}?story=${encodeURIComponent(story.story_id)}`,
           to_email: recipient,
           email: recipient,
           to_name: firstName,
@@ -673,8 +690,10 @@
           params
         );
 
-        status.textContent="Your Story Page has been emailed. This browser also keeps your saved place. Story ID "+story.story_id+" is your reference if you ever need support.";
+        await recordEmailStatus("accepted");
+        status.textContent="Your Story Page was accepted by the email service. This browser also keeps your saved place. Story ID "+story.story_id+" is your support reference.";
       }catch(e){
+        await recordEmailStatus("failed");
         console.error("EmailJS send failed:", e?.status || "", e?.text || e);
         status.textContent="Your Story is safely saved on this device, but the email could not be sent. Copy Story ID "+story.story_id+" as a support reference before you leave this page.";
       }
