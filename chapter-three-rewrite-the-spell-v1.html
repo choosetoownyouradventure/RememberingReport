@@ -279,6 +279,7 @@ function save(status="in_progress",finalResult={}){
       if(status==="complete"){
         chapterCompleted=true;
         completionPending=false;
+        const handoff=document.getElementById("chapterFourBtn");if(handoff)handoff.disabled=false;
         localStorage.setItem(localKey,JSON.stringify({version:VERSION,client,result:finalResult,completed:true,updated_at:new Date().toISOString()}));
       }
       setStatus(status==="complete"?"Chapter Three saved to your Remembering Story.":"Your place is saved.","ok");
@@ -321,10 +322,20 @@ function navButtons(back=true,next="Continue →",disable=false){
     <button class="primary" id="nextBtn" ${disable?"disabled":""}>${next}</button>
   </div>`;
 }
+function validationError(message, selector){
+  const old=document.getElementById("chapterValidationError");if(old)old.remove();
+  const note=document.createElement("p");note.id="chapterValidationError";note.setAttribute("role","alert");
+  note.style.cssText="border-left:4px solid #b78429;padding:12px 16px;background:#fff1d6;color:#192b3d;font-weight:600;";
+  note.textContent=message;
+  const target=selector?document.querySelector(selector):null;
+  if(target){target.insertAdjacentElement("beforebegin",note);target.setAttribute("aria-invalid","true");target.setAttribute("aria-describedby",note.id);target.focus();}
+  else{const next=document.getElementById("nextBtn");if(next)next.insertAdjacentElement("beforebegin",note);note.setAttribute("tabindex","-1");note.focus();}
+  return false;
+}
 function bindNav(onNext,onBack){
   const n=document.getElementById("nextBtn"),b=document.getElementById("backBtn");
   if(n)n.onclick=async()=>{
-    if(onNext && onNext()===false)return;
+    if(onNext && onNext()!==true)return;
     const nextIndex=Math.min(pageIndex+1,pages.length-1);
     const completing=pages[nextIndex]==="complete";
     client.current_step=pages[nextIndex];
@@ -371,7 +382,7 @@ old_sentence(){
  <textarea id="rule" placeholder="Write what comes first. You can change it later.">${esc(client.rule_completion)}</textarea>
  <p class="hint">You don't need to make it sound wise, reasonable, spiritual, or positive.</p>${navButtons()}`;
  document.getElementById("rule").oninput=e=>{client.rule_completion=e.target.value;scheduleSave()};
- bindNav(()=>{client.rule_completion=val("rule");return !!client.rule_completion||alert("Write the sentence that comes first for you.")});
+ bindNav(()=>{client.rule_completion=val("rule");return !!client.rule_completion||validationError("Write the sentence that comes first for you.","#rule")});
 },
 prediction(){
  document.getElementById("page").innerHTML=`
@@ -381,7 +392,7 @@ prediction(){
  <label for="meaning">And if that happened, what would it mean about you?</label><textarea id="meaning">${esc(client.identity_meaning)}</textarea>
  <p class="hint">Sometimes the spell isn't hiding in what we're afraid will happen. It's hiding in what we believe that outcome would say about us.</p>${navButtons()}`;
  ["pred","meaning"].forEach(id=>document.getElementById(id).oninput=e=>{client[id==="pred"?"predicted_consequence":"identity_meaning"]=e.target.value;scheduleSave()});
- bindNav(()=>{client.predicted_consequence=val("pred");client.identity_meaning=val("meaning");return !!client.predicted_consequence||alert("Give the old story a chance to make its prediction.")});
+ bindNav(()=>{client.predicted_consequence=val("pred");client.identity_meaning=val("meaning");return !!client.predicted_consequence||validationError("Give the old story a chance to make its prediction.","#pred")});
 },
 spell(){
  document.getElementById("page").innerHTML=`
@@ -394,7 +405,7 @@ spell(){
  ${navButtons()}`;
  [["if","spell_if"],["then","spell_then"],["means","spell_means"]].forEach(([id,k])=>document.getElementById(id).oninput=e=>{client[k]=e.target.value;scheduleSave()});
  bindScale("oldScale",v=>client.old_spell_strength=v);
- bindNav(()=>{client.spell_if=val("if");client.spell_then=val("then");client.spell_means=val("means");if(client.old_spell_strength===null){alert("Choose how true the old sentence feels right now.");return false}return true});
+ bindNav(()=>{client.spell_if=val("if");client.spell_then=val("then");client.spell_means=val("means");if(client.old_spell_strength===null){return validationError("Choose how true the old sentence feels right now.")}return true});
 },
 protection(){
  const opts=["Stay safe","Keep the peace","Feel loved or accepted","Avoid rejection","Avoid failure","Avoid conflict","Feel needed","Stay in control","Protect someone else","Meet expectations","Make sense of something painful","Keep belonging","I honestly don't know"];
@@ -449,9 +460,9 @@ path1(){
  if(client.chosen_path==="rule"){document.querySelectorAll('input[name="cost"]').forEach(e=>e.onchange=()=>{client.path_rule.five_year_costs=checked("cost");scheduleSave()});document.getElementById("b1").oninput=e=>{client.path_rule.greatest_sacrifice=e.target.value;scheduleSave()};}
  if(client.chosen_path==="gift"){document.getElementById("c1").oninput=e=>{client.path_gift.future_self_truth=e.target.value;scheduleSave()};}
  bindNav(()=>{
-  if(client.chosen_path==="evidence"){client.path_evidence.exception_story=val("a1");client.path_evidence.prediction_accuracy=oneChecked("accuracy");client.path_evidence.actual_outcome=val("a2");return !!client.path_evidence.exception_story||alert("Give yourself one real example to work with.");}
-  if(client.chosen_path==="rule"){client.path_rule.five_year_costs=checked("cost");client.path_rule.greatest_sacrifice=val("b1");return !!client.path_rule.greatest_sacrifice||alert("Name what you are most tired of sacrificing.");}
-  client.path_gift.future_self_truth=val("c1");client.path_gift.would_recommend_belief=oneChecked("recommend");return !!client.path_gift.future_self_truth||alert("Let the wiser voice say something first.");
+  if(client.chosen_path==="evidence"){client.path_evidence.exception_story=val("a1");client.path_evidence.prediction_accuracy=oneChecked("accuracy");client.path_evidence.actual_outcome=val("a2");return !!client.path_evidence.exception_story||validationError("Give yourself one real example to work with.","#a1");}
+  if(client.chosen_path==="rule"){client.path_rule.five_year_costs=checked("cost");client.path_rule.greatest_sacrifice=val("b1");return !!client.path_rule.greatest_sacrifice||validationError("Name what you are most tired of sacrificing.","#b1");}
+  client.path_gift.future_self_truth=val("c1");client.path_gift.would_recommend_belief=oneChecked("recommend");return !!client.path_gift.future_self_truth||validationError("Let the wiser voice say something first.","#c1");
  });
 },
 path2(){
@@ -495,7 +506,7 @@ rewrite(){
  <label>I choose to remember that…</label><textarea id="r3">${esc(client.rewrite_prompts.choose_to_remember)}</textarea>
  ${navButtons()}`;
  ["r1","r2","r3"].forEach(id=>document.getElementById(id).oninput=scheduleSave);
- bindNav(()=>{client.rewrite_prompts.no_longer_believe=val("r1");client.rewrite_prompts.beginning_to_believe=val("r2");client.rewrite_prompts.choose_to_remember=val("r3");return !!strongestClientTruth()||alert("Write at least one sentence you are willing to explore.")});
+ bindNav(()=>{client.rewrite_prompts.no_longer_believe=val("r1");client.rewrite_prompts.beginning_to_believe=val("r2");client.rewrite_prompts.choose_to_remember=val("r3");return !!strongestClientTruth()||validationError("Write at least one sentence you are willing to explore.","#r1")});
 },
 choose_rewrite(){
  const opts=rewriteOptions();
@@ -508,7 +519,7 @@ choose_rewrite(){
  ${navButtons()}`;
  document.querySelectorAll('input[name="rewrite"]').forEach(e=>e.onchange=()=>{client.rewrite_selection.selected_option=e.value;document.getElementById("customRewrite").classList.toggle("hidden",e.value!=="custom");scheduleSave();renderers.choose_rewrite();});
  const c=document.getElementById("customRewrite");if(c)c.oninput=e=>{client.rewrite_selection.custom_rewrite=e.target.value;scheduleSave()};
- bindNav(()=>{client.rewrite_selection.selected_option=oneChecked("rewrite")||client.rewrite_selection.selected_option;client.rewrite_selection.custom_rewrite=val("customRewrite");return !!chosenRewrite()||alert("Choose a rewrite or write one in your own words.")});
+ bindNav(()=>{client.rewrite_selection.selected_option=oneChecked("rewrite")||client.rewrite_selection.selected_option;client.rewrite_selection.custom_rewrite=val("customRewrite");return !!chosenRewrite().trim()||validationError("Choose a rewrite or write one in your own words.",client.rewrite_selection.selected_option==="custom"?"#customRewrite":null)});
 },
 body(){
  const responses=["I feel relief","I feel stronger","I feel hopeful","I feel emotional","I feel resistance","Part of me believes it","It feels too big or unrealistic","I don't notice much"];
@@ -522,7 +533,7 @@ body(){
  ${navButtons()}`;
  document.querySelectorAll('input[name="response"]').forEach(e=>e.onchange=()=>{client.rewrite_response=checked("response");scheduleSave()});
  bindScale("newScale",v=>client.new_belief_strength=v);
- bindNav(()=>{client.rewrite_response=checked("response");if(client.new_belief_strength===null){alert("Choose how believable the new statement feels right now.");return false}return true});
+ bindNav(()=>{client.rewrite_response=checked("response");if(client.new_belief_strength===null){return validationError("Choose how believable the new statement feels right now.")}return true});
 },
 bridge(){
  const old=oldSpell();
@@ -542,7 +553,7 @@ bridge(){
  ${navButtons()}`;
  document.querySelectorAll('input[name="bridge"]').forEach(e=>e.onchange=()=>{client.bridge_selection=e.value;document.getElementById("bridgeCustom").classList.toggle("hidden",e.value!=="custom");scheduleSave()});
  document.getElementById("bridgeCustom").oninput=e=>{client.bridge_custom=e.target.value;scheduleSave()};
- bindNav(()=>{client.bridge_selection=oneChecked("bridge")||client.bridge_selection;client.bridge_custom=val("bridgeCustom");return !!bridgeBelief()||alert("Choose or write a bridge belief.")});
+ bindNav(()=>{client.bridge_selection=oneChecked("bridge")||client.bridge_selection;client.bridge_custom=val("bridgeCustom");return !!bridgeBelief().trim()||validationError("Choose or write a bridge belief.",client.bridge_selection==="custom"?"#bridgeCustom":null)});
 },
 experiment(){
  document.getElementById("page").innerHTML=`
@@ -559,7 +570,7 @@ experiment(){
  ${navButtons()}`;
  document.querySelectorAll('input[name="experiment"]').forEach(e=>e.onchange=()=>{client.experiment_choice=e.value;scheduleSave()});
  document.getElementById("customExp").oninput=e=>{client.custom_experiment=e.target.value;scheduleSave()};
- bindNav(()=>{client.experiment_choice=oneChecked("experiment")||client.experiment_choice;client.custom_experiment=val("customExp");if(!client.experiment_choice){alert("Choose how you want to use your seven-day experiment.");return false}if(client.experiment_choice!=="keep"&&!client.custom_experiment){alert("Write the action you want to try.");return false}return true});
+ bindNav(()=>{client.experiment_choice=oneChecked("experiment")||client.experiment_choice;client.custom_experiment=val("customExp");if(!client.experiment_choice){return validationError("Choose how you want to use your seven-day experiment.")}if(client.experiment_choice!=="keep"&&!client.custom_experiment){return validationError("Write the action you want to try.","#customExp")}return true});
 },
 anchor(){
  const opts=["My relationship with God / faith","Prayer or Scripture","My body","Breath","A physical gesture or movement","An image or symbol","Music or sound","Nature","A meaningful object","Something else","I don't want an anchor right now"];
@@ -573,7 +584,7 @@ anchor(){
  document.getElementById("anchorText").oninput=e=>{client.anchor_text=e.target.value;scheduleSave()};
  bindNav(()=>{
    client.anchor_type=oneChecked("anchor")||client.anchor_type;client.anchor_text=val("anchorText");
-   if(!client.anchor_type){alert("Choose an anchor option, including “I don't want an anchor right now” if that fits.");return false}
+   if(!client.anchor_type){return validationError("Choose an anchor option, including “I don't want an anchor right now” if that fits.")}
    result={
      old_spell:oldSpell(),
      client_stated_belief:client.rule_completion,
@@ -634,14 +645,18 @@ complete(){
  <p>Where do you feel the old story? And where—perhaps very quietly—do you feel the new one beginning?</p>
  <h3>Chapter Four · The Body Remembers →</h3>
  <div id="saveStatus" class="status ok">Chapter Three is saved to your Remembering Story.</div>
- <div class="actions"><button class="secondary" onclick="window.print()">Print / Save This Chapter</button><button class="primary" id="reviewBtn">Revisit Chapter Three</button></div>`;
+ <div class="actions"><button class="secondary" onclick="window.print()">Print / Save This Chapter</button><button class="primary" id="reviewBtn">Revisit Chapter Three</button><button class="primary" type="button" id="chapterFourBtn" ${chapterCompleted?"":"disabled"}>Continue to Chapter Four →</button></div>`;
+ document.getElementById("chapterFourBtn").onclick=()=>{
+   if(!chapterCompleted){setStatus("Chapter Three must be confirmed saved before continuing.","error");return;}
+   window.location.href=new URL("chapter-four-the-body-remembers-v1.html",window.location.href).href;
+ };
  document.getElementById("reviewBtn").onclick=()=>{pageIndex=1;client.current_step=pages[1];cacheLocal();render();window.scrollTo({top:0,behavior:"smooth"})};
   const status=document.getElementById("saveStatus");
   if(status && !chapterCompleted){
     status.textContent="Confirming the completed chapter in your Story Vault…";
     const retry=document.createElement("button");
     retry.type="button";retry.textContent="Retry completed save";
-    retry.onclick=async()=>{retry.disabled=true;await finishChapter();retry.disabled=chapterCompleted;};
+    retry.onclick=async()=>{retry.disabled=true;await finishChapter();retry.disabled=chapterCompleted;const handoff=document.getElementById("chapterFourBtn");if(handoff)handoff.disabled=!chapterCompleted;};
     status.insertAdjacentElement("afterend",retry);
   }
 }
