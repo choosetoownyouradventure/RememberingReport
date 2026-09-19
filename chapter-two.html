@@ -80,6 +80,19 @@ textarea{min-height:110px;resize:vertical}
   .maprow{grid-template-columns:1fr;gap:4px}
   .page{padding:26px 20px}
 }
+
+/* Reading accessibility repair: intentionally scoped to these chapter pages. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;font-size:18px}
+body{font-size:1rem;line-height:1.65;background-attachment:scroll}
+.wrap,.shell{width:min(100% - 32px,960px);max-width:960px;margin-inline:auto}
+.book{width:100%;max-width:none}
+.page{padding:clamp(24px,4vw,52px);min-height:0}
+.page p,.page li,.page label,.page .choice,.page .quote,.page .summary-card{font-size:1rem;line-height:1.65}
+.page h2{font-size:clamp(1.8rem,4.2vw,2.8rem);line-height:1.16}
+.page button,.page textarea,.page input{font-size:1rem}
+.page button{min-height:44px}
+.page textarea{max-width:100%}
+@media(max-width:640px){html{font-size:17px}.wrap,.shell{width:calc(100% - 20px);padding-top:16px}.page{padding:24px 18px}.actions,.btnrow{gap:12px}.actions button,.btnrow button{max-width:100%}}
 </style>
 </head>
 <body>
@@ -241,10 +254,9 @@ textarea{min-height:110px;resize:vertical}
 
       <div id="saveStatus" class="status"></div>
       <div class="btnrow">
-  <button class="btn ghost" onclick="window.print()">PRINT / SAVE THIS CHAPTER</button>
-  <button class="btn primary" id="restartChapter">REVISIT CHAPTER TWO</button>
-  <button class="btn gold" id="continueChapter">CONTINUE TO CHAPTER THREE →</button>
-</div>
+        <button class="btn ghost" onclick="window.print()">PRINT / SAVE THIS CHAPTER</button>
+        <button class="btn primary" id="restartChapter">REVISIT CHAPTER TWO</button>
+      </div>
     </section>
 
     <div class="progressWrap">
@@ -716,11 +728,6 @@ $("restartChapter").addEventListener("click",()=>{
   if(confirm("Revisit Chapter Two? Your saved completed chapter will remain until you complete it again.")) show("intro");
 });
 
-$("continueChapter").addEventListener("click",()=>{
-  window.location.href =
-    `chapter-three-rewrite-the-spell-v1.html?story=${encodeURIComponent(state.story_id)}`;
-});
-  
 async function reopen(){
   const params=new URLSearchParams(location.search);
   state.story_id=params.get("story")||localStorage.getItem("ctya_story_id");
