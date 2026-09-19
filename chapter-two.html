@@ -215,6 +215,11 @@ body{font-size:1rem;line-height:1.65;background-attachment:scroll}
       <h2>Insight becomes evidence when something changes in the real world.</h2>
       <p>Choose one small experiment. This is not a test of whether you can be perfect; it is a way to collect new information.</p>
       <div class="choices" id="experimentChoices"></div>
+      <div id="experimentCustomWrap" class="hidden">
+        <label for="experimentCustom"><b>Write your own seven-day experiment</b></label>
+        <p>What small, safe action will you try, and when? This is your choice; the story will use your own words.</p>
+        <textarea id="experimentCustom" placeholder="For the next seven days, I choose to…"></textarea>
+      </div>
       <h3>What will you notice?</h3>
       <div class="choices" id="measureChoices"></div>
       <div class="btnrow"><button class="btn ghost" data-back="rewrite">← BACK</button><button class="btn gold" id="finish" disabled>COMPLETE CHAPTER TWO →</button></div>
@@ -256,6 +261,7 @@ body{font-size:1rem;line-height:1.65;background-attachment:scroll}
       <div class="btnrow">
         <button class="btn ghost" onclick="window.print()">PRINT / SAVE THIS CHAPTER</button>
         <button class="btn primary" id="restartChapter">REVISIT CHAPTER TWO</button>
+        <button class="btn gold hidden" id="continueChapterThree" type="button">CONTINUE TO CHAPTER THREE →</button>
       </div>
     </section>
 
@@ -409,7 +415,7 @@ const GENERIC={
 const state={
  story_id:null,resume_token:null,story:null,
  candidateVeil:null,trigger:null,triggerText:null,response:null,promise:null,
- meaning:null,spell:null,reward:null,cost:null,door:null,rewrite:null,experiment:null,measure:null
+ meaning:null,spell:null,reward:null,cost:null,door:null,rewrite:null,experiment:null,experimentChoice:null,measure:null
 };
 
 const order=["intro","trigger","response","promise","meaning","spell","cost","mapPage","door","rewrite","experiment","result"];
@@ -573,7 +579,16 @@ function setup(){
   choiceGroup("rewriteChoices",rewriteItems(),(v,l)=>{
     state.rewrite=v;$("rewriteOtherWrap").classList.toggle("hidden",v!=="other");$("rewriteNext").disabled=false;
   });
-  choiceGroup("experimentChoices",experimentItems(),(v,l)=>{state.experiment=l;$("finish").disabled=!(state.experiment&&state.measure)});
+  choiceGroup("experimentChoices",experimentItems(),(v,l)=>{
+    state.experimentChoice=v;
+    state.experiment=v==="custom"?$("experimentCustom").value.trim():l;
+    $("experimentCustomWrap").classList.toggle("hidden",v!=="custom");
+    $("finish").disabled=!(state.experiment&&state.measure);
+  });
+  $("experimentCustom").addEventListener("input",e=>{
+    if(state.experimentChoice==="custom")state.experiment=e.target.value.trim();
+    $("finish").disabled=!(state.experiment&&state.measure);
+  });
   choiceGroup("measureChoices",GENERIC.measures,(v,l)=>{state.measure=l;$("finish").disabled=!(state.experiment&&state.measure)});
 }
 function checkCost(){$("costNext").disabled=!(state.reward&&state.cost)}
@@ -635,6 +650,7 @@ $("rewriteNext").addEventListener("click",()=>{
 function currentRewrite(){return selectedText(rewriteItems(),state.rewrite,$("rewriteOther").value)}
 
 $("finish").addEventListener("click",async()=>{
+  if(!state.experiment||!state.measure){alert("Choose an experiment and what you will notice before completing this chapter.");return;}
   const c=candidate();
   const payload={
     version:"chapter2-v5",
@@ -651,6 +667,7 @@ $("finish").addEventListener("click",async()=>{
     choice_point:state.door,
     emerging_truth:currentRewrite(),
     seven_day_experiment:state.experiment,
+    experiment_source:state.experimentChoice==="custom"?"client_authored":"guided_option",
     measure:state.measure,
     behavioral_measure:evidenceSpec().behavioral_measure,
     evidence_question:evidenceSpec().evidence_question
@@ -675,6 +692,7 @@ $("finish").addEventListener("click",async()=>{
   $("measure").textContent=`As you try it, notice: ${payload.measure} Evidence to collect: ${payload.behavioral_measure} Keep this question with you: ${payload.evidence_question}`;
   $("closing").textContent=`You have done something important in this chapter: you turned a vague detour into a map. You can now see the moment, the meaning, the protective promise, the familiar response, the cost — and the place where another choice can enter.`;
   $("cliffhanger").textContent=`But an old sentence can survive even after you recognize it. In Chapter Three, we will follow the words themselves: where the rule gets its authority, what keeps reinforcing it, and how to rewrite it without replacing one rigid story with another. The next question is no longer “What is the pattern?” It is: “Whose story gets to write what happens next?”`;
+  $("continueChapterThree").classList.add("hidden");
   $("saveStatus").textContent="Chapter Two is saved in this browser.";
   show("result");
 
@@ -697,6 +715,7 @@ $("finish").addEventListener("click",async()=>{
             choice_point:payload.choice_point,
             emerging_truth:payload.emerging_truth,
             seven_day_experiment:payload.seven_day_experiment,
+            experiment_source:payload.experiment_source,
             measure:payload.measure,
             behavioral_measure:payload.behavioral_measure,
             evidence_question:payload.evidence_question
@@ -715,6 +734,7 @@ $("finish").addEventListener("click",async()=>{
       const data=await r.json().catch(()=>({}));
       if(r.ok && data.success){
         $("saveStatus").textContent="Chapter Two is saved to your Remembering Story.";
+        $("continueChapterThree").classList.remove("hidden");
       }else{
         $("saveStatus").textContent="Chapter Two is saved in this browser, but the Story API did not accept the chapter sync.";
       }
@@ -724,6 +744,9 @@ $("finish").addEventListener("click",async()=>{
   }
 });
 
+$("continueChapterThree").addEventListener("click",()=>{
+  window.location.href="chapter-three-rewrite-the-spell-v1.html";
+});
 $("restartChapter").addEventListener("click",()=>{
   if(confirm("Revisit Chapter Two? Your saved completed chapter will remain until you complete it again.")) show("intro");
 });
