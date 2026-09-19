@@ -604,16 +604,34 @@
       document.getElementById("storyIdText").textContent=story.story_id||state.story_id||"";
     }
 
-    async function recordEmailStatus(outcome){
-      if(!state.story_id || !state.resume_token) return;
-      try {
-        await fetch(`${CONFIG.API_BASE}/stories/${encodeURIComponent(state.story_id)}/email-status`, {
-          method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({resume_token:state.resume_token,status:outcome})
-        });
-      } catch(e) { console.warn("Email status could not be recorded:",e); }
-    }
+   async function recordEmailStatus(outcome){
+  if(!state.story_id || !state.resume_token){
+    console.warn("Email status skipped: story ID or resume token missing.");
+    return;
+  }
 
+  try {
+    const response = await fetch(
+      `${CONFIG.API_BASE}/stories/${encodeURIComponent(state.story_id)}/email-status`,
+      {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          resume_token:state.resume_token,
+          status:outcome
+        })
+      }
+    );
+
+    if(!response.ok){
+      console.warn("Email status update rejected. HTTP:", response.status);
+    }else{
+      console.log("Email status recorded successfully.");
+    }
+  }catch(e){
+    console.warn("Email status request failed:",e);
+  }
+}
     async function sendStoryEmail(story){
       const status=document.getElementById("emailStatus");
       if(!window.emailjs){
