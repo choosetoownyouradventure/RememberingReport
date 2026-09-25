@@ -36,8 +36,10 @@ const QUESTIONS=[
 {id:"E06",prompt:"When you feel deeply aligned, which statement fits best?",options:[["EARTH","I feel present, rooted and able to participate fully in the life in front of me."],["STARSEED","I feel free to explore, imagine and translate unusual possibilities into something meaningful."],["ANGELIC","I feel connected to compassion, protection, reconciliation and service."]]}
 ];
 const params=new URLSearchParams(location.search);
-const storyId=(params.get("story_id")||localStorage.getItem("ctoya_story_id")||localStorage.getItem("story_id")||"").trim();
-const resumeToken=(params.get("resume_token")||sessionStorage.getItem("ctoya_resume_token")||localStorage.getItem("ctoya_resume_token")||localStorage.getItem("resume_token")||"").trim();
+const storyId=(sessionStorage.getItem("ctya_assessment_story_id")||localStorage.getItem("ctoya_story_id")||"").trim();
+const resumeToken=(sessionStorage.getItem("ctya_assessment_resume_token")||localStorage.getItem("ctoya_resume_token")||"").trim();
+sessionStorage.removeItem("ctya_assessment_story_id");
+sessionStorage.removeItem("ctya_assessment_resume_token");
 let index=0,assessment=null,allAnswers={},essenceAnswers={}; const $=id=>document.getElementById(id);
 function show(id){["loading","quiz","done","error"].forEach(x=>$(x).classList.toggle("hidden",x!==id))}
 function fail(m){$("errorText").textContent=m;show("error")}
