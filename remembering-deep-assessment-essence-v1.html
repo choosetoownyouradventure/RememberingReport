@@ -92,6 +92,31 @@ const DETAIL_TIES={
 "ANGEL_CONCORD|ANGEL_MERCY":{id:"SD-AT3",prompt:"Which form of help feels more natural?",options:[["ANGEL_MERCY","Comfort and restoration."],["ANGEL_CONCORD","Reconciliation and renewed connection."]]}
 };
 
+
+const VOCATIONS=["SERVER","ARTISAN","WARRIOR","SCHOLAR","SAGE","PRIEST"];
+const VOCATION_LABELS={SERVER:"Server",ARTISAN:"Artisan",WARRIOR:"Warrior",SCHOLAR:"Scholar",SAGE:"Sage",PRIEST:"Priest"};
+const VOCATION_Q=[
+{id:"V01",prompt:"A group you care about is struggling. What do you notice yourself wanting to do first?",options:[["SERVER","Make sure the people most affected are supported."],["ARTISAN","Imagine a different way the situation could be approached."],["WARRIOR","Take action and get things moving."],["SCHOLAR","Understand what is actually happening before deciding."],["SAGE","Find language that helps everyone understand it differently."],["PRIEST","Reconnect the group with the deeper meaning or purpose involved."]]},
+{id:"V02",prompt:"You are given an open-ended project. Which role do you naturally gravitate toward?",options:[["SERVER","Make it useful and supportive for the people it serves."],["ARTISAN","Shape something original, beautiful or inventive."],["WARRIOR","Set a target and drive it toward completion."],["SCHOLAR","Research, organize and make the system make sense."],["SAGE","Give it a compelling voice, message or story."],["PRIEST","Ensure it serves a meaningful transformation or calling."]]},
+{id:"V03",prompt:"A conflict is stalling progress. What contribution feels most natural?",options:[["SERVER","Help each person feel heard and cared for."],["ARTISAN","Find a creative option no one has tried."],["WARRIOR","Name the issue directly and move toward resolution."],["SCHOLAR","Separate facts, assumptions and missing information."],["SAGE","Reframe the conversation so people can hear each other."],["PRIEST","Bring everyone back to the values or purpose underneath the conflict."]]},
+{id:"V04",prompt:"You enter a room where no one knows what to do next. What do you instinctively offer?",options:[["SERVER","Notice who needs support and quietly strengthen the group."],["ARTISAN","Offer an unconventional solution or prototype."],["WARRIOR","Organize action and establish momentum."],["SCHOLAR","Ask the questions that clarify what is really going on."],["SAGE","Give the group a clear message, narrative or rallying point."],["PRIEST","Name the deeper purpose and invite people back into alignment."]]},
+{id:"V05",prompt:"You learn something important. What do you most want to do with it?",options:[["SERVER","Use it to help someone who needs it."],["ARTISAN","Turn it into something new or expressive."],["WARRIOR","Apply it immediately to produce a result."],["SCHOLAR","Study it further and connect it to a larger body of knowledge."],["SAGE","Teach or communicate it in an engaging way."],["PRIEST","Use it to help people connect with meaning, values or transformation."]]},
+{id:"V06",prompt:"A community problem keeps repeating. Where does your attention go first?",options:[["SERVER","Who is being underserved or unsupported?"],["ARTISAN","What new design or approach might solve this?"],["WARRIOR","What action or boundary has not yet been taken?"],["SCHOLAR","What pattern or missing evidence explains the recurrence?"],["SAGE","What conversation or message keeps failing?"],["PRIEST","What deeper value, belief or sense of purpose has been lost?"]]},
+{id:"V07",prompt:"Someone asks what makes your work meaningful. Which answer feels closest?",options:[["SERVER","I make people’s lives easier, safer or more supported."],["ARTISAN","I create what did not exist before."],["WARRIOR","I help people act, decide or move."],["SCHOLAR","I help people understand complexity."],["SAGE","I help people see, hear or express something differently."],["PRIEST","I help people reconnect with meaning and what they are here to serve."]]},
+{id:"V08",prompt:"When a plan fails, which response comes most naturally?",options:[["SERVER","Check who needs help and restore stability."],["ARTISAN","Experiment with another possibility."],["WARRIOR","Regroup and take the next decisive action."],["SCHOLAR","Analyze what failed and why."],["SAGE","Change the framing or communication."],["PRIEST","Ask what the setback is revealing about purpose or alignment."]]},
+{id:"V09",prompt:"Which compliment would feel most deeply accurate?",options:[["SERVER","You make people feel genuinely supported."],["ARTISAN","You see possibilities no one else sees."],["WARRIOR","You are brave enough to make things happen."],["SCHOLAR","You understand things deeply."],["SAGE","You know how to say what everyone is trying to say."],["PRIEST","You help people remember what truly matters."]]},
+{id:"V10",prompt:"If you had one day to contribute with no concern about status, what would you most want to do?",options:[["SERVER","Care for or assist people directly."],["ARTISAN","Make, design or invent something."],["WARRIOR","Lead an effort that creates change."],["SCHOLAR","Study, investigate or organize knowledge."],["SAGE","Teach, speak, write or tell stories."],["PRIEST","Guide reflection, meaning, healing or spiritual growth."]]},
+{id:"V11",prompt:"When people seek you out, what are they most often hoping you will provide?",options:[["SERVER","Steady support and practical care."],["ARTISAN","Original ideas and creative solutions."],["WARRIOR","Courage, advocacy and decisive movement."],["SCHOLAR","Analysis, research and reliable understanding."],["SAGE","Communication, perspective and expression."],["PRIEST","Guidance around meaning, values and transformation."]]},
+{id:"V12",prompt:"Which kind of legacy feels most meaningful?",options:[["SERVER","People were better supported because I was here."],["ARTISAN","Something original exists because I created it."],["WARRIOR","Important change happened because I acted."],["SCHOLAR","Useful understanding was preserved or clarified."],["SAGE","Ideas and stories reached people because I gave them voice."],["PRIEST","People lived with greater meaning and alignment because I helped awaken it."]]}
+];
+function vocationClarifiers(a,b){
+ const src=["V01","V09","V11"];
+ return src.map((id,i)=>{
+   const q=VOCATION_Q.find(x=>x.id===id);
+   return {id:`VC-${a}-${b}-${i+1}`,prompt:["Under pressure, which contribution feels more naturally yours?","Which satisfying outcome feels more like your contribution?","When others seek you out, which role feels more familiar?"][i],options:q.options.filter(x=>x[0]===a||x[0]===b)};
+ });
+}
+
 const DETAIL_LABELS={
 EARTH_HEARTH:"The Hearth",EARTH_GARDEN:"The Garden",EARTH_COMMONS:"The Commons",
 STAR_HORIZON:"The Horizon",STAR_PATTERN:"The Pattern",STAR_BRIDGE:"The Bridge",
@@ -159,12 +184,25 @@ function detailDecision(branch){
  }
  return {scores,needed,complete,primary:code,topTwo:[r[0][0],r[1][0]],confidence,clarifiersShown:needed};
 }
+
+function vocationDecision(){
+ const base=counts(allAnswers.vocation,VOCATIONS);
+ const br=ranked(base), rawDiff=br[0][1]-br[1][1], normMargin=(rawDiff/24)*100;
+ const needsClarifier=rawDiff<3||normMargin<15;
+ const clar=allAnswers.vocation_clarifiers||{}, final={...base};
+ Object.values(clar).forEach(v=>{if(v in final)final[v]+=2});
+ const fr=ranked(final), max=24+(Object.keys(clar).length*2), margin=((fr[0][1]-fr[1][1])/max)*100;
+ const clarComplete=!needsClarifier||Object.keys(clar).length>=3;
+ return {baseScores:base,scores:final,primary:fr[0][0],runnerUp:fr[1][0],ranking:fr.map(x=>x[0]),margin:Math.round(margin*10)/10,confidence:confidenceFromMargin(margin),needsClarifier,clarComplete,topPair:[br[0][0],br[1][0]]};
+}
 function setSection(kind,q){
  phase=kind;queue=q;index=0;sectionAnswers={};
  if(kind==="essence"){sectionAnswers={...(allAnswers.essence||{})};$("sectionKicker").textContent="Remember · Essence Orientation";$("sectionTitle").textContent="Notice what resonates.";$("sectionIntro").textContent="Choose the response that feels closest to your experience. There are no right or wrong answers."}
  if(kind==="essenceClar"){sectionAnswers={...(allAnswers.essence_clarifiers||{})};$("sectionKicker").textContent="Remember · Essence Clarifier";$("sectionTitle").textContent="A little more distinction.";$("sectionIntro").textContent="These questions help distinguish the two Essence orientations that scored closest together."}
  if(kind==="detail"){sectionAnswers={...(allAnswers.soul_detail||{})};$("sectionKicker").textContent="Remember · Soul Detail";$("sectionTitle").textContent="Where does meaning become vivid?";$("sectionIntro").textContent="Soul Detail adds texture to your Essence result. It personalizes language and examples; it does not determine your program or prescription."}
  if(kind==="detailClar"){sectionAnswers={...(allAnswers.soul_detail_clarifiers||{})};$("sectionKicker").textContent="Remember · Soul Detail Clarifier";$("sectionTitle").textContent="One finer distinction.";$("sectionIntro").textContent="A short tie-break helps avoid forcing a subtype when two meaning fields are close."}
+ if(kind==="vocation"){sectionAnswers={...(allAnswers.vocation||{})};$("sectionKicker").textContent="Remember · Soul Signature";$("sectionTitle").textContent="How does your contribution naturally move?";$("sectionIntro").textContent="Choose the response that feels most naturally like you. Soul Signature describes a vocational pattern; it does not determine worth, readiness, or difficulty."}
+ if(kind==="vocationClar"){sectionAnswers={...(allAnswers.vocation_clarifiers||{})};$("sectionKicker").textContent="Remember · Soul Signature Clarifier";$("sectionTitle").textContent="Your strongest signatures are close.";$("sectionIntro").textContent="Three short comparisons help distinguish your leading two vocational patterns without forcing certainty."}
  const n=queue.findIndex(q=>!sectionAnswers[q.id]);index=n===-1?Math.max(0,queue.length-1):n;render();show("quiz")
 }
 function render(){
@@ -211,6 +249,18 @@ async function finishSection(){
    if(!(await save({answers:allAnswers,profile})))return;
    await saveDetailAndDone(detailDecision(profile.essence.primary));return;
  }
+ if(phase==="vocation"){
+   allAnswers={...allAnswers,vocation:{...sectionAnswers}};
+   if(!(await save({answers:allAnswers,profile})))return;
+   const vd=vocationDecision();
+   if(vd.needsClarifier){setSection("vocationClar",vocationClarifiers(vd.topPair[0],vd.topPair[1]));return}
+   await saveVocationAndDone(vd);return;
+ }
+ if(phase==="vocationClar"){
+   allAnswers={...allAnswers,vocation_clarifiers:{...sectionAnswers}};
+   if(!(await save({answers:allAnswers,profile})))return;
+   await saveVocationAndDone(vocationDecision());return;
+ }
 }
 async function saveEssenceAndOpenDetail(er){
  profile={...profile,essence:{primary:er.primary,label:ESSENCE_LABELS[er.primary],scores:er.finalScores,runner_up:er.runnerUp,margin:er.margin,confidence:er.confidence,clarifiersShown:Object.keys(allAnswers.essence_clarifiers||{})}};
@@ -220,10 +270,26 @@ async function saveEssenceAndOpenDetail(er){
 async function saveDetailAndDone(dr){
  const code=dr.primary;
  profile={...profile,soulDetail:{code,label:code?DETAIL_LABELS[code]:null,scores:dr.scores,confidence:dr.confidence,clarifiersShown:dr.clarifiersShown,topTwo:dr.topTwo}};
+ // Keep legacy camelCase for existing records and also write the frozen snake_case contract.
+ profile={...profile,soul_detail:profile.soulDetail};
+ if(!(await save({answers:allAnswers,profile})))return;
+ const vocationComplete=VOCATION_Q.every(q=>allAnswers.vocation?.[q.id]);
+ if(!vocationComplete){setSection("vocation",VOCATION_Q);return}
+ const vd=vocationDecision();
+ if(vd.needsClarifier&&!vd.clarComplete){setSection("vocationClar",vocationClarifiers(vd.topPair[0],vd.topPair[1]));return}
+ await saveVocationAndDone(vd)
+}
+
+async function saveVocationAndDone(vd){
+ const ss={primary:vd.primary,label:VOCATION_LABELS[vd.primary],runner_up:vd.runnerUp,runner_up_label:VOCATION_LABELS[vd.runnerUp],scores:vd.scores,ranking:vd.ranking,margin:vd.margin,confidence:vd.confidence,clarifiersShown:Object.keys(allAnswers.vocation_clarifiers||{})};
+ profile={...profile,soul_signature:ss};
  if(!(await save({answers:allAnswers,profile})))return;
  $("progress").style.width="100%";
- const e=profile.essence,sd=profile.soulDetail;
- $("doneStatus").textContent=`Essence: ${e.label} (${e.confidence}). Soul Detail: ${sd.label||sd.confidence} (${sd.confidence}). Saved to assessment ${assessment.assessment_id}. Status remains in progress.`;
+ const e=profile.essence,sd=profile.soul_detail||profile.soulDetail;
+ $("done").querySelector(".kicker").textContent="Remember Profile Checkpointed";
+ $("done").querySelector("h2").textContent="Your Essence, Soul Detail and Soul Signature are safely saved.";
+ $("done").querySelector(".intro").textContent="Your Remember profile now includes three scored layers. Mission Style is the next assessment section.";
+ $("doneStatus").textContent=`Essence: ${e.label} (${e.confidence}). Soul Detail: ${sd.label||sd.confidence} (${sd.confidence}). Soul Signature: ${ss.label} with ${ss.runner_up_label} secondary (${ss.confidence}). Saved to assessment ${assessment.assessment_id}. Status remains in progress.`;
  show("done")
 }
 async function start(){
@@ -247,6 +313,7 @@ async function start(){
     const qs=dr.needed.map(k=>({id:k,prompt:DETAIL_TIES[k].prompt,options:DETAIL_TIES[k].options}));
     setSection("detailClar",qs);return
   }
+  // saveDetailAndDone now resumes/opens Soul Signature and only shows done after vocation is scored.
   await saveDetailAndDone(dr)
  }catch(e){fail(e.message)}
 }
