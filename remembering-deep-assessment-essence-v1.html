@@ -93,6 +93,26 @@ const DETAIL_TIES={
 };
 
 
+
+const MISSIONS=["NURTURE","CREATE","MOBILIZE","ILLUMINATE","EXPRESS","AWAKEN"];
+const MISSION_LABELS={NURTURE:"Nurture",CREATE:"Create",MOBILIZE:"Mobilize",ILLUMINATE:"Illuminate",EXPRESS:"Express",AWAKEN:"Awaken"};
+const MISSION_OPTIONS=[
+["NURTURE","Strengthen, care for or make life more supportive."],
+["CREATE","Bring something original into form."],
+["MOBILIZE","Move people or systems toward action."],
+["ILLUMINATE","Make complexity understandable."],
+["EXPRESS","Give ideas, experiences or people a compelling voice."],
+["AWAKEN","Reconnect people with meaning, values or a larger sense of purpose."]
+];
+const MISSION_Q=[
+{id:"M01",prompt:"If your work could create one kind of change, which would satisfy you most?",options:MISSION_OPTIONS},
+{id:"M02",prompt:"Which effect do you most want your presence to have on other people?",options:MISSION_OPTIONS},
+{id:"M03",prompt:"When an idea matters to you, what do you most want to do with it?",options:MISSION_OPTIONS},
+{id:"M04",prompt:"Which description sounds most like “impact” to you?",options:MISSION_OPTIONS},
+{id:"M05",prompt:"Imagine your best work reaching many people. What is it doing for them?",options:MISSION_OPTIONS},
+{id:"M06",prompt:"At the end of a meaningful season of work, which result would make you think, “Yes—that was worth doing”?",options:MISSION_OPTIONS}
+];
+
 const VOCATIONS=["SERVER","ARTISAN","WARRIOR","SCHOLAR","SAGE","PRIEST"];
 const VOCATION_LABELS={SERVER:"Server",ARTISAN:"Artisan",WARRIOR:"Warrior",SCHOLAR:"Scholar",SAGE:"Sage",PRIEST:"Priest"};
 const VOCATION_Q=[
@@ -185,6 +205,12 @@ function detailDecision(branch){
  return {scores,needed,complete,primary:code,topTwo:[r[0][0],r[1][0]],confidence,clarifiersShown:needed};
 }
 
+
+function missionDecision(){
+ const scores=counts(allAnswers.mission,MISSIONS);
+ const r=ranked(scores), margin=((r[0][1]-r[1][1])/12)*100;
+ return {scores,primary:r[0][0],runnerUp:r[1][0],ranking:r.map(x=>x[0]),margin:Math.round(margin*10)/10,confidence:confidenceFromMargin(margin)};
+}
 function vocationDecision(){
  const base=counts(allAnswers.vocation,VOCATIONS);
  const br=ranked(base), rawDiff=br[0][1]-br[1][1], normMargin=(rawDiff/24)*100;
@@ -201,6 +227,7 @@ function setSection(kind,q){
  if(kind==="essenceClar"){sectionAnswers={...(allAnswers.essence_clarifiers||{})};$("sectionKicker").textContent="Remember · Essence Clarifier";$("sectionTitle").textContent="A little more distinction.";$("sectionIntro").textContent="These questions help distinguish the two Essence orientations that scored closest together."}
  if(kind==="detail"){sectionAnswers={...(allAnswers.soul_detail||{})};$("sectionKicker").textContent="Remember · Soul Detail";$("sectionTitle").textContent="Where does meaning become vivid?";$("sectionIntro").textContent="Soul Detail adds texture to your Essence result. It personalizes language and examples; it does not determine your program or prescription."}
  if(kind==="detailClar"){sectionAnswers={...(allAnswers.soul_detail_clarifiers||{})};$("sectionKicker").textContent="Remember · Soul Detail Clarifier";$("sectionTitle").textContent="One finer distinction.";$("sectionIntro").textContent="A short tie-break helps avoid forcing a subtype when two meaning fields are close."}
+ if(kind==="mission"){sectionAnswers={...(allAnswers.mission||{})};$("sectionKicker").textContent="Remember · Mission Style";$("sectionTitle").textContent="What kind of change do you most want to create?";$("sectionIntro").textContent="Mission Style describes the effect your contribution most wants to have. Choose what feels closest; close results can remain blended rather than being forced."}
  if(kind==="vocation"){sectionAnswers={...(allAnswers.vocation||{})};$("sectionKicker").textContent="Remember · Soul Signature";$("sectionTitle").textContent="How does your contribution naturally move?";$("sectionIntro").textContent="Choose the response that feels most naturally like you. Soul Signature describes a vocational pattern; it does not determine worth, readiness, or difficulty."}
  if(kind==="vocationClar"){sectionAnswers={...(allAnswers.vocation_clarifiers||{})};$("sectionKicker").textContent="Remember · Soul Signature Clarifier";$("sectionTitle").textContent="Your strongest signatures are close.";$("sectionIntro").textContent="Three short comparisons help distinguish your leading two vocational patterns without forcing certainty."}
  const n=queue.findIndex(q=>!sectionAnswers[q.id]);index=n===-1?Math.max(0,queue.length-1):n;render();show("quiz")
@@ -261,6 +288,11 @@ async function finishSection(){
    if(!(await save({answers:allAnswers,profile})))return;
    await saveVocationAndDone(vocationDecision());return;
  }
+ if(phase==="mission"){
+   allAnswers={...allAnswers,mission:{...sectionAnswers}};
+   if(!(await save({answers:allAnswers,profile})))return;
+   await saveMissionAndDone(missionDecision());return;
+ }
 }
 async function saveEssenceAndOpenDetail(er){
  profile={...profile,essence:{primary:er.primary,label:ESSENCE_LABELS[er.primary],scores:er.finalScores,runner_up:er.runnerUp,margin:er.margin,confidence:er.confidence,clarifiersShown:Object.keys(allAnswers.essence_clarifiers||{})}};
@@ -284,12 +316,21 @@ async function saveVocationAndDone(vd){
  const ss={primary:vd.primary,label:VOCATION_LABELS[vd.primary],runner_up:vd.runnerUp,runner_up_label:VOCATION_LABELS[vd.runnerUp],scores:vd.scores,ranking:vd.ranking,margin:vd.margin,confidence:vd.confidence,clarifiersShown:Object.keys(allAnswers.vocation_clarifiers||{})};
  profile={...profile,soul_signature:ss};
  if(!(await save({answers:allAnswers,profile})))return;
+ const missionComplete=MISSION_Q.every(q=>allAnswers.mission?.[q.id]);
+ if(!missionComplete){setSection("mission",MISSION_Q);return}
+ await saveMissionAndDone(missionDecision())
+}
+
+async function saveMissionAndDone(md){
+ const m={primary:md.primary,label:MISSION_LABELS[md.primary],runner_up:md.runnerUp,runner_up_label:MISSION_LABELS[md.runnerUp],scores:md.scores,ranking:md.ranking,margin:md.margin,confidence:md.confidence};
+ profile={...profile,mission_style:m};
+ if(!(await save({answers:allAnswers,profile})))return;
  $("progress").style.width="100%";
- const e=profile.essence,sd=profile.soul_detail||profile.soulDetail;
+ const e=profile.essence,sd=profile.soul_detail||profile.soulDetail,ss=profile.soul_signature;
  $("done").querySelector(".kicker").textContent="Remember Profile Checkpointed";
- $("done").querySelector("h2").textContent="Your Essence, Soul Detail and Soul Signature are safely saved.";
- $("done").querySelector(".intro").textContent="Your Remember profile now includes three scored layers. Mission Style is the next assessment section.";
- $("doneStatus").textContent=`Essence: ${e.label} (${e.confidence}). Soul Detail: ${sd.label||sd.confidence} (${sd.confidence}). Soul Signature: ${ss.label} with ${ss.runner_up_label} secondary (${ss.confidence}). Saved to assessment ${assessment.assessment_id}. Status remains in progress.`;
+ $("done").querySelector("h2").textContent="Your Remember profile now has four scored layers.";
+ $("done").querySelector(".intro").textContent="Essence, Soul Detail, Soul Signature and Mission Style are safely saved. Story Position is the next assessment section.";
+ $("doneStatus").textContent=`Essence: ${e.label} (${e.confidence}). Soul Detail: ${sd.label||sd.confidence} (${sd.confidence}). Soul Signature: ${ss.label} with ${ss.runner_up_label} secondary (${ss.confidence}). Mission Style: ${m.label} with ${m.runner_up_label} secondary (${m.confidence}). Saved to assessment ${assessment.assessment_id}. Status remains in progress.`;
  show("done")
 }
 async function start(){
