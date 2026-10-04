@@ -97,23 +97,191 @@ const DETAIL_TIES={
 
 const MISSIONS=["NURTURE","CREATE","MOBILIZE","ILLUMINATE","EXPRESS","AWAKEN"];
 const MISSION_LABELS={NURTURE:"Nurture",CREATE:"Create",MOBILIZE:"Mobilize",ILLUMINATE:"Illuminate",EXPRESS:"Express",AWAKEN:"Awaken"};
-const MISSION_OPTIONS=[
-["NURTURE","Strengthen, care for or make life more supportive."],
-["CREATE","Bring something original into form."],
-["MOBILIZE","Move people or systems toward action."],
-["ILLUMINATE","Make complexity understandable."],
-["EXPRESS","Give ideas, experiences or people a compelling voice."],
-["AWAKEN","Reconnect people with meaning, values or a larger sense of purpose."]
-];
+// Mission wording repair: six contexts, stable category codes and scoring.
 const MISSION_Q=[
-{id:"M01",prompt:"If your work could create one kind of change, which would satisfy you most?",options:MISSION_OPTIONS},
-{id:"M02",prompt:"Which effect do you most want your presence to have on other people?",options:MISSION_OPTIONS},
-{id:"M03",prompt:"When an idea matters to you, what do you most want to do with it?",options:MISSION_OPTIONS},
-{id:"M04",prompt:"Which description sounds most like “impact” to you?",options:MISSION_OPTIONS},
-{id:"M05",prompt:"Imagine your best work reaching many people. What is it doing for them?",options:MISSION_OPTIONS},
-{id:"M06",prompt:"At the end of a meaningful season of work, which result would make you think, “Yes—that was worth doing”?",options:MISSION_OPTIONS}
+  {
+    "id": "M01",
+    "prompt": "If your work could create one kind of change, which would satisfy you most?",
+    "options": [
+      [
+        "NURTURE",
+        "People have more dependable care, support or belonging."
+      ],
+      [
+        "CREATE",
+        "An original design, experience or solution exists where none did before."
+      ],
+      [
+        "MOBILIZE",
+        "People have taken a needed step and change is underway."
+      ],
+      [
+        "ILLUMINATE",
+        "A confusing subject has become clear enough to understand."
+      ],
+      [
+        "EXPRESS",
+        "An overlooked idea or experience has found a voice."
+      ],
+      [
+        "AWAKEN",
+        "People have reconnected with values, meaning or a sense of purpose."
+      ]
+    ]
+  },
+  {
+    "id": "M02",
+    "prompt": "Which effect do you most want your presence to have on other people?",
+    "options": [
+      [
+        "NURTURE",
+        "They feel supported enough to meet what they are facing."
+      ],
+      [
+        "CREATE",
+        "They feel free to imagine and make something of their own."
+      ],
+      [
+        "MOBILIZE",
+        "They feel ready to act on something that matters."
+      ],
+      [
+        "ILLUMINATE",
+        "They understand a situation that previously felt confusing."
+      ],
+      [
+        "EXPRESS",
+        "They feel able to put their experience into words or expression."
+      ],
+      [
+        "AWAKEN",
+        "They remember what matters to them and why."
+      ]
+    ]
+  },
+  {
+    "id": "M03",
+    "prompt": "When an idea matters to you, what do you most want to do with it?",
+    "options": [
+      [
+        "NURTURE",
+        "Use it to make daily life more caring or supportive."
+      ],
+      [
+        "CREATE",
+        "Develop it into an original object, design or experience."
+      ],
+      [
+        "MOBILIZE",
+        "Turn it into a practical plan and get the first step moving."
+      ],
+      [
+        "ILLUMINATE",
+        "Investigate it and explain how it works."
+      ],
+      [
+        "EXPRESS",
+        "Give it a story, image or message that people can connect with."
+      ],
+      [
+        "AWAKEN",
+        "Explore how it connects people with their deeper values or calling."
+      ]
+    ]
+  },
+  {
+    "id": "M04",
+    "prompt": "Which description sounds most like “impact” to you?",
+    "options": [
+      [
+        "NURTURE",
+        "A need is met and care becomes more dependable."
+      ],
+      [
+        "CREATE",
+        "A new possibility takes form and can be experienced."
+      ],
+      [
+        "MOBILIZE",
+        "A stalled situation moves into purposeful action."
+      ],
+      [
+        "ILLUMINATE",
+        "Better understanding changes how people see a problem."
+      ],
+      [
+        "EXPRESS",
+        "Something previously unspoken can be heard or seen."
+      ],
+      [
+        "AWAKEN",
+        "People begin living with greater meaning and alignment."
+      ]
+    ]
+  },
+  {
+    "id": "M05",
+    "prompt": "Imagine your best work reaching many people. What is it doing for them?",
+    "options": [
+      [
+        "NURTURE",
+        "Making everyday life more supportive and connected."
+      ],
+      [
+        "CREATE",
+        "Offering a new design, tool or experience people can use."
+      ],
+      [
+        "MOBILIZE",
+        "Helping people organize, decide and take a meaningful step."
+      ],
+      [
+        "ILLUMINATE",
+        "Making a complex subject accessible and understandable."
+      ],
+      [
+        "EXPRESS",
+        "Helping people recognize and express experiences they could not name."
+      ],
+      [
+        "AWAKEN",
+        "Inviting people to reconnect with purpose and live their values."
+      ]
+    ]
+  },
+  {
+    "id": "M06",
+    "prompt": "At the end of a meaningful season of work, which result would make you think, “Yes—that was worth doing”?",
+    "options": [
+      [
+        "NURTURE",
+        "People received care or support that made a real difference."
+      ],
+      [
+        "CREATE",
+        "I brought an original idea into a form others could experience."
+      ],
+      [
+        "MOBILIZE",
+        "A meaningful change happened because we followed through."
+      ],
+      [
+        "ILLUMINATE",
+        "We gained understanding that others can build on."
+      ],
+      [
+        "EXPRESS",
+        "A story or message reached people and gave something important a voice."
+      ],
+      [
+        "AWAKEN",
+        "People chose a more meaningful direction that felt true to them."
+      ]
+    ]
+  }
 ];
 
+const MISSION_WORDING_REVISION="mission-context-options-2026-10-04";
 const VOCATIONS=["SERVER","ARTISAN","WARRIOR","SCHOLAR","SAGE","PRIEST"];
 const VOCATION_LABELS={SERVER:"Server",ARTISAN:"Artisan",WARRIOR:"Warrior",SCHOLAR:"Scholar",SAGE:"Sage",PRIEST:"Priest"};
 const VOCATION_Q=[
@@ -291,6 +459,7 @@ async function finishSection(){
  }
  if(phase==="mission"){
    allAnswers={...allAnswers,mission:{...sectionAnswers}};
+   profile={...profile,mission_wording_revision:MISSION_WORDING_REVISION};
    if(!(await save({answers:allAnswers,profile})))return;
    await saveMissionAndDone(missionDecision());return;
  }
